@@ -16,7 +16,8 @@ public class CommonClass
         EnemyBlockZone,
         EnemyDeckZone,
         EnemyGraveZone,
-        AttackZone
+        PlayerAttackZone,
+        EnemyAttackZone
 
     }
 

@@ -9,7 +9,9 @@ public class GameDataManager: MonoBehaviour //게임 루프 데이터를 이용하는 매니저
     [SerializeField] GameLoopData _data;
 
 
+    //해당 클래스는 위 게임 데이터의 엔티티의 프로퍼티로 이사갈 가능성이 높음
 
+    /*
    
     void OnEnable()
     {
@@ -109,5 +111,5 @@ public class GameDataManager: MonoBehaviour //게임 루프 데이터를 이용하는 매니저
     
         EventBus.Publish(new EventBus.UpdatedPlayerEnergy { maxEnergy = _data.player.maxEnergy, newEnergy = _data.player.currEnergy });
     }
-
+    */
 }

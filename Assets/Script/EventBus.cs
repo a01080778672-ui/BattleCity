@@ -62,13 +62,9 @@ public static class EventBus
     public struct CardLeftClickedEvent { public CardView card; }   // 카드 왼쪽 클릭 됐어요
     public struct CardRightClickedEvent { public CardView card; } //카드 오른쪽 클릭 됐어요
 
-    public struct StartInitPhaseEvent { };
-    public struct StartPlayerSettingBlockCardPhaseEvent { }   // 플레이어 방어 세팅 턴으로 
-    public struct StartPlayerMainPhaseEvent { }   // 플레이어 턴 시작 처리
-    public struct StartPlayerTryBlockPhaseEvent { }   // 플레이어의 방어 시도 시작 턴으로 
-    public struct StartEnemyMainPhaseEvent { }   // 적 턴 시작 됐어요
-    public struct StartEnemySettingBlockCardPhaseEvent { }   // 플레이어 방어 세팅 턴으로 이동합니다
-    public struct StartEnemyTryBlockPhaseEvent { }   // 플레이어의 방어 시도 시작 턴으로 
+   
+
+    public struct FSMChanged { public GameState prev; public GameState curr; }//상태기 ???에서 ??? 로 바뀌었어요
 
     public struct GraveOpenButtonClicked { }//무덤 버튼이 눌렸어요
     public struct DeckOpenButtonClicked { }//덱 버튼이 눌렸어요
@@ -91,9 +87,6 @@ public static class EventBus
     /// 해당 이벤트들은 실행되어도 게임내 데이터를 바꾸지는 않음.
     /// </summary>
     public struct AlarmText { public string alarmText; }//중앙에 크게 UI 특정한 알람을 보여줍니다.
-    public struct UpdatedOtherHp { public int newHp; public int maxHp; }//UI쪽에 플레이어 hp를 업데이트
-    public struct UpdatedPlayerHp { public int newHp; public int maxHp; }//UI쪽에 적 hp를 업데이트
-    public struct UpdatedPlayerEnergy { public int newEnergy; public int maxEnergy; }//UI쪽에 에너지를 업데이트
     public struct UpdateGrave { public IReadOnlyList<CardInstance> cards; }//무덤 UI업데이트 하라 합니다
     public struct UpdateDeck { public IReadOnlyList<CardInstance> cards; }//덱 UI업데이트 하라고 합니다.
     public struct RelocateCardUI {  public CardInstance card; public CommonClass.ZoneType from;public CommonClass.ZoneType to; }//실제 데이터는 안 바뀌고, UI에서 카드를 여기서 여기로 보내달라고 하는 이벤트
@@ -108,14 +101,17 @@ public static class EventBus
     /// 무언가를 해달라고 요청하는 이벤트. ) 플레이어 hp나 적hp또는 에너지를 바꿔달라고 요청하는 이벤트들이 있다. 
     /// //이 이벤트가 실행되면 실제로 데이터가 바뀐뒤, UI를 업데이트 해달라는 이벤트가 다음에 배치되어있을 가능성이 높다.
     /// </summary>
-    public struct RequestPlayerDamage { public int damage; }// hp를 깍으라고 요청하는 이벤트
-    public struct RequestOtherDamage { public int damage; }// hp를 깍으라고 요청하는 이벤트
-    public struct RequestUsePlayerEnergy { public int energy; }//플레이어의 에너지를 이만큼 쓰라고 요청하는 이벤트
-    public struct RequestUseEnemyEnergy { public int energy; }//적의 에너지를 이만큼 쓰라고 요청하는 이벤트
+
     public struct RequestRelocateCard { public CardInstance card; public CommonClass.ZoneType to; }//1개의 카드를 특정 지점에 보내달라 요청하는 이벤트.
-    public struct RequestPlayerDrawCards { }
-    public struct RequestEnemyDrawCards { }
-    
+
+
+    public struct StartInitPhaseEvent { };//게임 시작 세팅 모드 (게임 시작시 자동으로 발동할듯)
+    public struct StartPlayerSettingBlockCardPhaseEvent { }   // 플레이어 방어 세팅 턴으로 
+    public struct StartPlayerMainPhaseEvent { }   // 플레이어 턴 시작 처리
+    public struct StartPlayerTryBlockPhaseEvent { }   // 플레이어의 방어 시도 시작 턴으로 
+    public struct StartEnemyMainPhaseEvent { }   // 적 턴 시작 됐어요
+    public struct StartEnemySettingBlockCardPhaseEvent { }   // 플레이어 방어 세팅 턴으로 이동합니다
+    public struct StartEnemyTryBlockPhaseEvent { }   // 플레이어의 방어 시도 시작 턴으로 
 
 
 

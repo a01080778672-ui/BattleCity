@@ -13,13 +13,10 @@ public class CardSwapManager : MonoBehaviour //Ä«µå¸¦ µ¦, ¹«´ý, ¼ÕÆÐ ¿¡¼­ ¿©±â ¿
 
     private void OnEnable()
     {
-        EventBus.Subscribe<EventBus.RequestPlayerDrawCards>(e_RequestPlayerDrawCards);
-        EventBus.Subscribe<EventBus.RequestEnemyDrawCards>(e_RequestEnemyDrawCards);
+        EventBus.Subscribe<EventBus.FSMChanged>(e_FSMChanged);
+
         EventBus.Subscribe<EventBus.StartPlayerMainPhaseEvent>(e_PlayerMainPhaseStarted);
         EventBus.Subscribe<EventBus.StartEnemyMainPhaseEvent>(e_EnemyMainPhaseStarted);
-
-
-
         EventBus.Subscribe<EventBus.RequestRelocateCard>(e_RequestRelocateCard);
 
 
@@ -28,8 +25,8 @@ public class CardSwapManager : MonoBehaviour //Ä«µå¸¦ µ¦, ¹«´ý, ¼ÕÆÐ ¿¡¼­ ¿©±â ¿
 
     private void OnDisable()
     {
-        EventBus.Unsubscribe<EventBus.RequestPlayerDrawCards>(e_RequestPlayerDrawCards);
-        EventBus.Unsubscribe<EventBus.RequestEnemyDrawCards>(e_RequestEnemyDrawCards);
+        EventBus.Unsubscribe<EventBus.FSMChanged>(e_FSMChanged);
+
         EventBus.Unsubscribe<EventBus.StartPlayerMainPhaseEvent>(e_PlayerMainPhaseStarted);
         EventBus.Unsubscribe<EventBus.StartEnemyMainPhaseEvent>(e_EnemyMainPhaseStarted);
 
@@ -54,14 +51,18 @@ public class CardSwapManager : MonoBehaviour //Ä«µå¸¦ µ¦, ¹«´ý, ¼ÕÆÐ ¿¡¼­ ¿©±â ¿
             _data.SetReLocationCard(_data.currAttackCard, CommonClass.ZoneType.EnemyGraveZone);//ÇÃ·¹ÀÌ¾î ¸ÞÀÎ ÆäÀÌÁî ½ÃÀÛ½Ã °ø°ÝÁ¸¿¡ ÀÖ´Â Ä«µå°¡ ÀÖ´Ù¸é ¿Å±è
     }
 
-    void e_RequestPlayerDrawCards(EventBus.RequestPlayerDrawCards e)
+    void e_FSMChanged(EventBus.FSMChanged e)
     {
-        PlayerDrawCards(5);
+        if(((e.prev is PlayerMainPhaseState||e.prev is PlayerSettingBlockPhaseState)&&e.curr is EnemyMainPhaseState))
+        {
+            PlayerDrawCards(5);
+        }
+        else if(( e.prev is EnemyMainPhaseState || e.prev is EnemySettingBlockPhaseState) && e.curr is PlayerMainPhaseState )
+        {
+            EnemyDrawCards(5);
+        }
     }
-    void e_RequestEnemyDrawCards(EventBus.RequestEnemyDrawCards e)
-    {
-        EnemyDrawCards(5);
-    }
+
 
     
     void MoveAllHandCardToGrave()

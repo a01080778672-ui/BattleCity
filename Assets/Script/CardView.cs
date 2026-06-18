@@ -56,12 +56,12 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         set
         {
             if (SELECTED_DO_NOT_USE == value || cardtype == CardType.viewerCard) return;
-            if (clickAble == false) return;
+       
             if (value==true)//여기오면 축소해야함
             {
                 RectTransform rect = GetComponent<RectTransform>();
                 rect.DOSizeDelta(new Vector2(100.0f, 100.0f), 0.5f); // 너비, 높이를 100으로 0.5초에
-
+                
                 CardNameText.gameObject.SetActive(false);
                 CardTypeText.gameObject.SetActive(false);
             }

@@ -19,6 +19,8 @@ public class FSMManager : MonoBehaviour   //이 매니저는 주입 당할것 같다.
 
     private void OnEnable()
     {
+       
+
         EventBus.Subscribe<EventBus.StartPlayerMainPhaseEvent>(e_StartPlayerTurn);
         EventBus.Subscribe<EventBus.StartPlayerSettingBlockCardPhaseEvent>(e_StartPlayerSettingBlockPhase);
         EventBus.Subscribe<EventBus.StartPlayerTryBlockPhaseEvent>(e_StartPlayerTryBlockPhase);
@@ -41,6 +43,7 @@ public class FSMManager : MonoBehaviour   //이 매니저는 주입 당할것 같다.
         EventBus.Unsubscribe<EventBus.StartInitPhaseEvent>(e_StartSettingState);
     }
     
+
     void e_StartSettingState(EventBus.StartInitPhaseEvent e)
     {
         ChangeGameState(startState);
@@ -100,7 +103,7 @@ public class FSMManager : MonoBehaviour   //이 매니저는 주입 당할것 같다.
 
         Debug.Log("FSM상태 변이:" + newGameState);
         EventBus.Publish(new EventBus.AlarmText { alarmText=newGameState.ToString()+"상태가 되었다." });
-
+        EventBus.Publish(new EventBus.FSMChanged { prev = currGameState, curr = newGameState });
 
        currGameState?.OnExit();
        newGameState.OnEnter(currGameState);

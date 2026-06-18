@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 
 public class GameLoopData: MonoBehaviour 
@@ -10,6 +12,17 @@ public class GameLoopData: MonoBehaviour
     //player나 enemy의 카드 리스트를 직접 수정하는 함수를 여기가 아닌 밖에서 쓰지 않도록 해야할 듯 합니다.
     //그리고 카드를 추가하는 방법이 지금은 플레이어 덱에 추가하기, 적 덱에 추가하기 밖에 없도록 해야합니다
 {
+
+    [SerializeField] Slider playerHpBar;
+    [SerializeField] TextMeshProUGUI playerHpText;
+    [SerializeField] TextMeshProUGUI playerEnergyText;
+
+
+    [SerializeField] Slider enemyHpBar;
+    [SerializeField] TextMeshProUGUI enemyHpText;
+    [SerializeField] TextMeshProUGUI enemyEnergyText;
+
+
     public int currTurn;
     public EntityInstance player { get; private set; }
     public EntityInstance enemy { get; private set; }
@@ -17,9 +30,13 @@ public class GameLoopData: MonoBehaviour
 
     private void Awake()
     {
-        player = new EntityInstance();
-        enemy = new EntityInstance();
+        player = new EntityInstance(playerHpBar,playerHpText,playerEnergyText);
+        enemy = new EntityInstance(enemyHpBar,enemyHpText,enemyEnergyText);
         currTurn = 1;
+
+
+
+
     }
 
     public void AddPlayerDeckCard(CardInstance newCard)//플레이어에게 줍니다. 덱에 없었던 카드도 새롭게 추가합니다.
@@ -70,7 +87,8 @@ public class GameLoopData: MonoBehaviour
             case CommonClass.ZoneType.EnemyBlockZone: return enemy.RemoveFromBlock(card); 
             case CommonClass.ZoneType.EnemyDeckZone: return enemy.RemoveFromDeck(card); 
             case CommonClass.ZoneType.EnemyGraveZone: return enemy.RemoveFromGrave(card);
-            case CommonClass.ZoneType.AttackZone: currAttackCard = null; return true;
+            case CommonClass.ZoneType.PlayerAttackZone: currAttackCard = null; return true;
+            case CommonClass.ZoneType.EnemyAttackZone: currAttackCard = null; return true;
         }
         return false;
     }
@@ -87,7 +105,8 @@ public class GameLoopData: MonoBehaviour
             case CommonClass.ZoneType.EnemyBlockZone: enemy.AddToBlock(card); break;
             case CommonClass.ZoneType.EnemyDeckZone: enemy.AddToDeck(card); break;
             case CommonClass.ZoneType.EnemyGraveZone: enemy.AddToGrave(card); break;
-            case CommonClass.ZoneType.AttackZone: currAttackCard = card;break;
+            case CommonClass.ZoneType.PlayerAttackZone: currAttackCard = card;break;
+            case CommonClass.ZoneType.EnemyAttackZone: currAttackCard = card; break;
         }
     }
 
@@ -101,7 +120,8 @@ public class GameLoopData: MonoBehaviour
         if (enemy.BlockCards.Contains(card)) return CommonClass.ZoneType.EnemyBlockZone;
         if (enemy.DeckCards.Contains(card)) return CommonClass.ZoneType.EnemyDeckZone;
         if (enemy.GraveCards.Contains(card)) return CommonClass.ZoneType.EnemyGraveZone;
-        if(currAttackCard==card)return CommonClass.ZoneType.AttackZone;
+        if (currAttackCard == card) return CommonClass.ZoneType.PlayerAttackZone;
+        if (currAttackCard == card) return CommonClass.ZoneType.EnemyAttackZone;
         return CommonClass.ZoneType.None;
     }
 

@@ -11,11 +11,7 @@ public class PlayerMainPhaseState : GameState
     }
     public override void OnEnter(GameState prevState)
     {
-        if (prevState is EnemyMainPhaseState)//적턴->플레이어 턴 인경우
-        {
-            EventBus.Publish(new EventBus.RequestEnemyDrawCards { });
-            EventBus.Publish(new EventBus.RequestUsePlayerEnergy { energy = -2 });
-        }
+       
     }
 
     public override void OnExit()

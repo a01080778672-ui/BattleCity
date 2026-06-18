@@ -53,7 +53,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
     List<CardView> enemyHandCards;//ÇÃ·¹ÀÌ¾î ¹æ¾îÁ¸ Ç¥Çö
     List<CardView> enemyBlockCards;//ÇÃ·¹ÀÌ¾î ¹æ¾îÁ¸ Ç¥Çö
     
-    CardView attackCard;//Áß¾Ó¿¡ ÀÖ´Â °ø°ÝÄ«µå Ç¥Çö
+    public CardView attackCard;//Áß¾Ó¿¡ ÀÖ´Â °ø°ÝÄ«µå Ç¥Çö
 
     CardView currSelectedCard=null;//ÇöÀç ¼±ÅÃÁßÀÎ Ä«µå ¿ÀºêÁ§Æ®¸¦ ÀúÀåÇÏ±â À§ÇØ
     private void Awake()
@@ -227,7 +227,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                     bufferCard = cardcomp;
                 }
                 break;
-            case CommonClass.ZoneType.AttackZone:
+            case CommonClass.ZoneType.PlayerAttackZone:
                 {
                     if (attackCard?.cardInstance == e.card)
                     {
@@ -241,7 +241,21 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
               
                 }
                 break;
-            }
+            case CommonClass.ZoneType.EnemyAttackZone:
+                {
+                    if (attackCard?.cardInstance == e.card)
+                    {
+                        bufferCard = attackCard;
+                        attackCard = null;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("¹º°¡ÀÌ»óÇÏ´Ù");
+                    }
+
+                }
+                break;
+        }
         
         if (bufferCard == null)
         {
@@ -330,7 +344,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                             .OnComplete(() => Destroy(bufferCard.gameObject));
                     }
                 break;
-            case CommonClass.ZoneType.AttackZone:
+            case CommonClass.ZoneType.PlayerAttackZone:
                 {
                     bufferCard.reduction = true;
                     bufferCard.selected = false;
@@ -341,7 +355,18 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                     attackCard= bufferCard;
                 }
                     break;
-            }
+            case CommonClass.ZoneType.EnemyAttackZone:
+                {
+                    bufferCard.reduction = true;
+                    bufferCard.selected = false;
+                    bufferCard.clickAble = false;
+                    bufferCard.transform.DOScale(Vector3.one, 0.7f);
+                    bufferCard.transform.DORotate(new Vector3(0, 0, 0), 0.7f);
+                    bufferCard.transform.DOMove(AttackMiddleZone.transform.position, 0.7f);
+                    attackCard = bufferCard;
+                }
+                break;
+        }
         
     }
     void ArrangeCardAsFan(List<CardView> cards, RectTransform left, RectTransform right)

@@ -11,12 +11,7 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
 {
     [SerializeField] Canvas canvas;
 
-    [SerializeField] Slider myHpBar;
-    [SerializeField] Slider enemyHpBar;
-    [SerializeField] TextMeshProUGUI myHpText;
-    [SerializeField] TextMeshProUGUI enemyHpText;
-    [SerializeField] TextMeshProUGUI playerEnergeText;
-    [SerializeField] TextMeshProUGUI enemyEnergeText;
+
 
 
     [SerializeField] TextMeshProUGUI[] alarmText;//여러개의 알람이 필요할때를 대비하여 배열로 받음
@@ -34,18 +29,14 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
     private void OnEnable()
     {
         EventBus.Subscribe<EventBus.AlarmText>(e_Alarm);
-        EventBus.Subscribe<EventBus.UpdatedPlayerHp>(e_SetMyHpBar);
-        EventBus.Subscribe<EventBus.UpdatedOtherHp>(e_SetOtherHpBar);
-        EventBus.Subscribe<EventBus.UpdatedPlayerEnergy>(e_SetEnergyText);
+
 
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe<EventBus.AlarmText>(e_Alarm);
-        EventBus.Unsubscribe<EventBus.UpdatedPlayerHp>(e_SetMyHpBar);
-        EventBus.Unsubscribe<EventBus.UpdatedOtherHp>(e_SetOtherHpBar);
-        EventBus.Unsubscribe<EventBus.UpdatedPlayerEnergy>(e_SetEnergyText);
+     
     }
 
 
@@ -137,21 +128,7 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
 
 
 
-    void e_SetMyHpBar(EventBus.UpdatedPlayerHp e)
-    {
-        myHpBar.value = (float)e.newHp / (float)e.maxHp;
-        myHpText.text = String.Format("{0}/{1}", e.newHp, e.maxHp);
-    }
-
-    void e_SetOtherHpBar(EventBus.UpdatedOtherHp e)
-    {
-        enemyHpBar.value = (float)e.newHp / (float)e.maxHp;
-        enemyHpText.text = String.Format("{0}/{1}",e.newHp,e.maxHp);
-    }
-    void e_SetEnergyText(EventBus.UpdatedPlayerEnergy e)
-    {
-        playerEnergeText.text=String.Format("{0}/{1}",e.newEnergy,e.maxEnergy);
-    }
+  
 
 
 
