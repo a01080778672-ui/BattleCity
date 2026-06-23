@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 
 public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§ÇØ ÀÏÇÏ´Â Å¬·¡½º 
@@ -39,7 +38,8 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
     [SerializeField] private RectTransform PlayerHandCardLeft;//ÇÃ·¹ÀÌ¾î ¼ÕÆÐ ÃÖ´ë ÁÂÃø À§Ä¡
     [SerializeField] private RectTransform PlayerHandCardRight;//ÇÃ·¹ÀÌ¾î ¼ÕÆÐ ÃÖ´ë ¿ìÃø À§Ä¡
 
-    [SerializeField] private RectTransform AttackMiddleZone;//Áß¾Ó¿¡ ÀÖ´Â °ø°ÝÄ«µå À§Ä¡
+    [SerializeField] private RectTransform PlayerAttackZone;//Áß¾Ó¿¡ ÀÖ´Â °ø°ÝÄ«µå À§Ä¡
+    [SerializeField] private RectTransform EnemyAttackZone;
 
 
     [SerializeField] private RectTransform graveContent;//¹«´ý Ã¢¿¡ µé¾î°¥ Ä«µåµéÀÇ ºÎ¸ð
@@ -47,6 +47,8 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
 
     [SerializeField] GameObject Card;//¼ÕÆÐ¿¡ ½ÇÁ¸ÇÏ´Â Ä«µå ³ÖÀ½(instantiate¸¦ À§ÇØ¼­)
     [SerializeField] GameObject viwerCard;//ÆÇ³Ú(¹«´ýÃ¢ÀÌ³ª µ¦Ã¢)Ã¢¿¡ ÀÖÀ» Ä«µå ÇÁ¸®Æé ³ÖÀ½(instantiate¸¦ À§ÇØ¼­)
+
+    [SerializeField] FSMManager fsmManager;
 
     List<CardView> playerHandCards;//°ÔÀÓ»ó¿¡ ÁøÂ¥·Î ³ª¿ÍÀÖ´Â Ä«µåµéÁß ¼ÕÆÐ Ä«µåµéÀ» ¿©±â´Ù ±â·Ï(ÀúÀå)ÇÕ´Ï´Ù
     List<CardView> playerBlockCards;//ÇÃ·¹ÀÌ¾î ¹æ¾îÁ¸ Ç¥Çö
@@ -56,6 +58,8 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
     public CardView attackCard;//Áß¾Ó¿¡ ÀÖ´Â °ø°ÝÄ«µå Ç¥Çö
 
     CardView currSelectedCard=null;//ÇöÀç ¼±ÅÃÁßÀÎ Ä«µå ¿ÀºêÁ§Æ®¸¦ ÀúÀåÇÏ±â À§ÇØ
+
+
     private void Awake()
     {
         playerHandCards = new List<CardView>();
@@ -80,6 +84,8 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
 
 
         EventBus.Subscribe<EventBus.RelocateCardUI>(e_RelocateUICard);
+
+        EventBus.Subscribe<EventBus.FSMChanged>(e_FSMchanged);
     }
 
 
@@ -103,6 +109,14 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
 
 
         EventBus.Unsubscribe<EventBus.RelocateCardUI>(e_RelocateUICard);
+
+        EventBus.Unsubscribe<EventBus.FSMChanged>(e_FSMchanged);
+    }
+
+
+    void e_FSMchanged(EventBus.FSMChanged e)
+    {
+        currSelectedCard = null;
     }
 
 
@@ -271,6 +285,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                 case CommonClass.ZoneType.PlayerHandZone:
                     {
                     bufferCard.reduction = false;
+                    bufferCard.isFront = true;
                         playerHandCards.Add(bufferCard);
                         ArrangeCardAsFan(playerHandCards, PlayerHandCardLeft, PlayerHandCardRight);
                     }
@@ -278,6 +293,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                 case CommonClass.ZoneType.PlayerBlockZone:
                     {
                     bufferCard.reduction = true;
+                    bufferCard.isFront = true;
                     playerBlockCards.Add(bufferCard);
                         ArrangeCardAsList(playerBlockCards, PlayerBlockCardLeft, PlayerBlockCardRight);
                     }
@@ -285,7 +301,8 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                 case CommonClass.ZoneType.PlayerDeckZone:
                     {
                         bufferCard.selected = false;
-                        bufferCard.clickAble = false;
+                    bufferCard.isFront = true;
+                    bufferCard.clickAble = false;
                         DOTween.Kill(bufferCard.transform);
                         bufferCard.transform.localScale = Vector3.one;
                         bufferCard.transform.DOScale(Vector3.zero, 0.7f);
@@ -296,7 +313,8 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                 case CommonClass.ZoneType.PlayerGraveZone:
                     {
                         bufferCard.selected = false;
-                        bufferCard.clickAble = false;
+                    bufferCard.isFront = true;
+                    bufferCard.clickAble = false;
                         DOTween.Kill(bufferCard.transform);
                         bufferCard.transform.localScale = Vector3.one;
                         bufferCard.transform.DOScale(Vector3.zero, 0.7f);
@@ -307,6 +325,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                 case CommonClass.ZoneType.EnemyHandZone:
                     {
                     bufferCard.reduction = false;
+                    bufferCard.isFront = false;
                     bufferCard.clickAble = false;
                         enemyHandCards.Add(bufferCard);
                         ArrangeCardAsFan(enemyHandCards, enemyHandCardLeft, enemyHandCardRight);
@@ -315,6 +334,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                 case CommonClass.ZoneType.EnemyBlockZone:
                     {
                     bufferCard.reduction = true;
+                    bufferCard.isFront = false;
                     bufferCard.clickAble = false;
                     enemyBlockCards.Add(bufferCard);
                         ArrangeCardAsList(enemyBlockCards, enemyBlockCardLeft, enemyBlockCardRight);
@@ -323,6 +343,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                 case CommonClass.ZoneType.EnemyDeckZone:
                     {
                     bufferCard.clickAble = false;
+                    bufferCard.isFront = false;
                     bufferCard.selected = false;
                         bufferCard.clickAble = false;
                         DOTween.Kill(bufferCard.transform);
@@ -335,6 +356,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                 case CommonClass.ZoneType.EnemyGraveZone:
                     {
                     bufferCard.clickAble = false;
+                    bufferCard.isFront = false;
                     bufferCard.selected = false;
                         bufferCard.clickAble = false;
                         DOTween.Kill(bufferCard.transform);
@@ -347,22 +369,24 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
             case CommonClass.ZoneType.PlayerAttackZone:
                 {
                     bufferCard.reduction = true;
+                    bufferCard.isFront = true;
                     bufferCard.selected = false;
                     bufferCard.clickAble = false;
                     bufferCard.transform.DOScale(Vector3.one, 0.7f);
                     bufferCard.transform.DORotate(new Vector3(0, 0, 0), 0.7f);
-                    bufferCard.transform.DOMove(AttackMiddleZone.transform.position, 0.7f);
+                    bufferCard.transform.DOMove(PlayerAttackZone.transform.position, 0.7f);
                     attackCard= bufferCard;
                 }
                     break;
             case CommonClass.ZoneType.EnemyAttackZone:
                 {
                     bufferCard.reduction = true;
+                    bufferCard.isFront = true;
                     bufferCard.selected = false;
                     bufferCard.clickAble = false;
                     bufferCard.transform.DOScale(Vector3.one, 0.7f);
                     bufferCard.transform.DORotate(new Vector3(0, 0, 0), 0.7f);
-                    bufferCard.transform.DOMove(AttackMiddleZone.transform.position, 0.7f);
+                    bufferCard.transform.DOMove(EnemyAttackZone.transform.position, 0.7f);
                     attackCard = bufferCard;
                 }
                 break;
@@ -423,10 +447,12 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
     }
     void e_CardLeftClicked(EventBus.CardLeftClickedEvent e)//ÀÌº¥Æ® ¹ö½º¿¡¼­ ±¸µ¶ÇÔ.invoke() ÇÏ¸é ½ÇÇàµÊ ¿¬Ãâ °ü·Ã ÇØ¼­¸¸ Àû¾îµÎÀÚ.
     {
-        if (e.card == null) return;
+        if (e.card == null||(fsmManager.GetCurrState() is not PlayerMainPhaseState && fsmManager.GetCurrState() is not PlayerSettingBlockPhaseState)) return;
+
+        
         foreach (var card in playerHandCards)//ÇÃ·¹ÀÌ¾î ¼ÕÆÐ Ä«µå°¡ ´­¸°°ÇÁö È®ÀÎÀ» À§ÇØ ¹Ýº¹¹® µ¹¸²
         {
-            if(card==e.card)//¿©±â °É¸®¸é ¼ÕÆÐ Ä«µå°¡ ´­¸°°ÍÀÌ ¸ÂÀ½
+            if (card == e.card)//¿©±â °É¸®¸é ¼ÕÆÐ Ä«µå°¡ ´­¸°°ÍÀÌ ¸ÂÀ½
             {
                 if (currSelectedCard != e.card)//´­¸° Ä«µå°¡ »õ·Î¿î Ä«µåÀÏ½Ã.
                 {
@@ -438,16 +464,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
             }
         }
 
-        //±×¸®°í ¿©±â¿¡´Ù°£ ÇÃ·¹ÀÌ¾î ¹æ¾îÁ¸ Ä«µå°¡ ´­¸°°ÇÁö È®ÀÎÀ» À§ÇØ ÄÚµå¸¦ Â¥¸é µÉ °Í °°´Ù.
-        //±×¸®°í ¿©±â¿¡´Ù°£ ÇÃ·¹ÀÌ¾î ¹æ¾îÁ¸ Ä«µå°¡ ´­¸°°ÇÁö È®ÀÎÀ» À§ÇØ ÄÚµå¸¦ Â¥¸é µÉ °Í °°´Ù.
-        //±×¸®°í ¿©±â¿¡´Ù°£ ÇÃ·¹ÀÌ¾î ¹æ¾îÁ¸ Ä«µå°¡ ´­¸°°ÇÁö È®ÀÎÀ» À§ÇØ ÄÚµå¸¦ Â¥¸é µÉ °Í °°´Ù.
-        //±×¸®°í ¿©±â¿¡´Ù°£ ÇÃ·¹ÀÌ¾î ¹æ¾îÁ¸ Ä«µå°¡ ´­¸°°ÇÁö È®ÀÎÀ» À§ÇØ ÄÚµå¸¦ Â¥¸é µÉ °Í °°´Ù.
-        //±×¸®°í ¿©±â¿¡´Ù°£ ÇÃ·¹ÀÌ¾î ¹æ¾îÁ¸ Ä«µå°¡ ´­¸°°ÇÁö È®ÀÎÀ» À§ÇØ ÄÚµå¸¦ Â¥¸é µÉ °Í °°´Ù.
-        //±×¸®°í ¿©±â¿¡´Ù°£ ÇÃ·¹ÀÌ¾î ¹æ¾îÁ¸ Ä«µå°¡ ´­¸°°ÇÁö È®ÀÎÀ» À§ÇØ ÄÚµå¸¦ Â¥¸é µÉ °Í °°´Ù.
-        //±×¸®°í ¿©±â¿¡´Ù°£ ÇÃ·¹ÀÌ¾î ¹æ¾îÁ¸ Ä«µå°¡ ´­¸°°ÇÁö È®ÀÎÀ» À§ÇØ ÄÚµå¸¦ Â¥¸é µÉ °Í °°´Ù.
-        //±×¸®°í ¿©±â¿¡´Ù°£ ÇÃ·¹ÀÌ¾î ¹æ¾îÁ¸ Ä«µå°¡ ´­¸°°ÇÁö È®ÀÎÀ» À§ÇØ ÄÚµå¸¦ Â¥¸é µÉ °Í °°´Ù.
-        //±×¸®°í ¿©±â¿¡´Ù°£ ÇÃ·¹ÀÌ¾î ¹æ¾îÁ¸ Ä«µå°¡ ´­¸°°ÇÁö È®ÀÎÀ» À§ÇØ ÄÚµå¸¦ Â¥¸é µÉ °Í °°´Ù.
-
+       
     }
     void e_CardRightClicked(EventBus.CardRightClickedEvent e)
     {

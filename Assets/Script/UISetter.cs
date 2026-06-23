@@ -16,6 +16,8 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
 
     [SerializeField] TextMeshProUGUI[] alarmText;//여러개의 알람이 필요할때를 대비하여 배열로 받음
     [SerializeField] RectTransform alarmPos;
+    [SerializeField] TextMeshProUGUI FSMuiText;
+
 
     [SerializeField] float gap=1.0f;
     [SerializeField] float alarmFadeTime = 1.0f;
@@ -29,18 +31,49 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
     private void OnEnable()
     {
         EventBus.Subscribe<EventBus.AlarmText>(e_Alarm);
-
+        EventBus.Subscribe<EventBus.FSMChanged>(e_FSMTextChange);
 
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe<EventBus.AlarmText>(e_Alarm);
-     
+        EventBus.Unsubscribe<EventBus.FSMChanged>(e_FSMTextChange);
+
     }
 
 
+    void e_FSMTextChange(EventBus.FSMChanged e)
+    {
+        if (FSMuiText == null) return;
+        switch (e.curr)
+        {
+            case PlayerMainPhaseState:
+                FSMuiText.text = "플레이어 메인 페이즈";
+                break;
+            case PlayerSettingBlockPhaseState:
+                FSMuiText.text = "플레이어 방어세팅 페이즈";
+                break;
+            case PlayerTryBlockPhaseState:
+                FSMuiText.text = "플레이어 방어시도 페이즈";
+                break;
+            case EnemyMainPhaseState:
+                FSMuiText.text = "적의 메인 페이즈";
+                break;
+            case EnemySettingBlockPhaseState:
+                FSMuiText.text = "적의 방어세팅 페이즈";
+                break;
+            case EnemyTryBlockPhaseState:
+                FSMuiText.text = "적의 방어시도 페이즈";
+                break;
+            case StartSettingState:
+                FSMuiText.text = "게임시작 페이즈";
+                break;
 
+
+        }
+
+    }
 
 
     void e_Alarm(EventBus.AlarmText e)

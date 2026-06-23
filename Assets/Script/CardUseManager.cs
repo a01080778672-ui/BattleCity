@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 당담하는 매니저이다.
 {
@@ -44,6 +43,8 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
         EventBus.Subscribe<EventBus.EnemyAttackSuccess>(e_EnemySuccessAttack);
 
         EventBus.Subscribe<EventBus.BlockButtonClicked>(e_TryPlayerUseBlockCard); // 임시 추가 0609김종호
+
+        EventBus.Subscribe<EventBus.FSMChanged>(e_FSMchanged);
     }
 
     private void OnDisable()
@@ -57,6 +58,8 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
         EventBus.Unsubscribe<EventBus.EnemyAttackSuccess>(e_EnemySuccessAttack);
 
         EventBus.Unsubscribe<EventBus.BlockButtonClicked>(e_TryPlayerUseBlockCard); // 임시 추가 0609김종호
+
+        EventBus.Unsubscribe<EventBus.FSMChanged>(e_FSMchanged);
     }
 
     private void Update() // 임시로 추가함 0609김종호
@@ -68,6 +71,12 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
                 EventBus.Publish(new EventBus.BlockButtonClicked { });
             }
         }
+    }
+
+    void e_FSMchanged(EventBus.FSMChanged e)
+    {
+        currSelectedBlockCards.Clear();
+        currSelectedCard = null;
     }
 
     void e_CheckSelectCard(EventBus.CheckSelectedCardLive e)//카드 버렸는데 그게 선택중이었던 카드면 없에야함
@@ -92,64 +101,74 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
             return;//플레이어가 카드를 만질 이유가 없는 상태이면 return하는게 맞을듯함.
         }
 
-        if (e.card.cardInstance != currSelectedCard)//눌린 카드가 선택 카드가 아니라면
+
+        if (fsmManager.GetCurrState() is PlayerTryBlockPhaseState) // 임시 추가 0609김종호
         {
-            currSelectedCard = e.card.cardInstance;// 선택됐던 카드가 아니면 이 카드를 선택하는것으로 마무리함
-            return;
-        }
-        
-        foreach (var item in _data.player.HandCards)//카드를 쓰게 될텐데 손패에 있던 카드라면
-        {
-            if (item == currSelectedCard)
+            foreach (var item1 in _data.player.BlockCards)//방어존에 있던 카드라면
             {
-                if (item.CardDataSO.type != CardDataSO.CardType.Block)
+
+                if (item1 == e.card.cardInstance)
                 {
-                    if(fsmManager.GetCurrState() is PlayerMainPhaseState)
-                    TryPlayerUseAttackCard( e.card.cardInstance);//카드를 쓰려고 하겠다 공격으로
-
-                    if(fsmManager.GetCurrState() is PlayerSettingBlockPhaseState)
-                        EventBus.Publish(new EventBus.RequestRelocateCard { card = item, to = CommonClass.ZoneType.PlayerBlockZone });//카드 스왑 매니저에 있는 카드 이동 시키기 이벤트 터트리기
-
-
-                    return;
-                }
-                else if (_data.player.BlockCards.Count < 5)
-                {
-                    if(fsmManager.GetCurrState() is PlayerMainPhaseState||fsmManager.GetCurrState() is PlayerSettingBlockPhaseState)
-                EventBus.Publish(new EventBus.RequestRelocateCard { card = item,to=CommonClass.ZoneType.PlayerBlockZone });//카드 스왑 매니저에 있는 카드 이동 시키기 이벤트 터트리기
-
-
-
-
-
-
-                return;
-            }
-            }
-        }
-
-        foreach (var item in _data.player.BlockCards )//방어존에 있던 카드라면
-        {
-            if (fsmManager.GetCurrState() is PlayerTryBlockPhaseState) // 임시 추가 0609김종호
-            {
-                //방어존에서 선택이 아니였던 카드라면 방어존 현재 선택 카드 리스트에 추가합니다
-                //방어존에서 선택됐던 카드라면 방어존 현재 선택 카드 리스트에서 없엡니다
-                if (item == currSelectedCard) // 임시 추가 0609김종호
-                {
-                    if (!currSelectedBlockCards.Contains(item))
+                    if (!currSelectedBlockCards.Contains(item1))
                     {
-                        currSelectedBlockCards.Add(item);
-                        EventBus.Publish(new EventBus.AlarmText { alarmText = $"{item.CardDataSO.cardName} 선택" });
+                        currSelectedBlockCards.Add(item1);
+                        e.card.selected = true;
+                        EventBus.Publish(new EventBus.AlarmText { alarmText = "방어카드 선택함" });
+
                     }
                     else
                     {
-                        currSelectedBlockCards.Remove(item);
-                        EventBus.Publish(new EventBus.AlarmText { alarmText = $"{item.CardDataSO.cardName} 취소" });
+                        currSelectedBlockCards.Remove(item1);
+                        e.card.selected = false;
+                        EventBus.Publish(new EventBus.AlarmText { alarmText = "방어카드 선택취소함" });
                     }
+                }
+         
+            }
 
+        }
+        else
+        {
+            foreach (var item in _data.player.HandCards)//카드를 쓰게 될텐데 손패에 있던 카드라면
+            {
+                if (e.card.cardInstance != currSelectedCard)//눌린 카드가 선택 카드가 아니라면
+                {
+                
+                    currSelectedCard = e.card.cardInstance;// 선택됐던 카드가 아니면 이 카드를 선택하는것으로 마무리함
+                
                     return;
                 }
+
+
+                else if (item == currSelectedCard)
+                {
+                    if (item.CardDataSO.type != CardDataSO.CardType.Block)
+                    {
+                        if (fsmManager.GetCurrState() is PlayerMainPhaseState)
+                            TryPlayerUseAttackCard(e.card.cardInstance);//카드를 쓰려고 하겠다 공격으로
+
+                        if (fsmManager.GetCurrState() is PlayerSettingBlockPhaseState)//방어 세팅 페이즈에선 공격카드역시 방어존으로 갑니다
+                            EventBus.Publish(new EventBus.RequestRelocateCard { card = item, to = CommonClass.ZoneType.PlayerBlockZone });//카드 스왑 매니저에 있는 카드 이동 시키기 이벤트 터트리기
+
+
+                        return;
+                    }
+                    else if (_data.player.BlockCards.Count < 5)
+                    {
+                        if (fsmManager.GetCurrState() is PlayerMainPhaseState || fsmManager.GetCurrState() is PlayerSettingBlockPhaseState)
+                            EventBus.Publish(new EventBus.RequestRelocateCard { card = item, to = CommonClass.ZoneType.PlayerBlockZone });//카드 스왑 매니저에 있는 카드 이동 시키기 이벤트 터트리기
+
+
+
+
+
+
+                        return;
+                    }
+                }
             }
+
+
         }
 
 
@@ -260,7 +279,6 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
         }
 
 
-        //currSelectedBlockCards.Clear();//방어했으니 선택한 방어카드는 싹 비워야함
 
         if (_data.currAttackCard.CardDataSO.power <= blockScore)
         {

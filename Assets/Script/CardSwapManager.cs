@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class CardSwapManager : MonoBehaviour //카드를 덱, 무덤, 손패 에서 여기 옮기고 저기 옮기고 하는 클래스이다.
 {

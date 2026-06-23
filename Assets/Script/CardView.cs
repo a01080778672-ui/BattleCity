@@ -24,6 +24,7 @@ using static EventBus;
 
 public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPointerDownHandler     //카드 하나하나마다 부착될 카드 컴포넌트이다.
 {
+ 
     enum CardType
     {
         handCard,
@@ -43,6 +44,9 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
     [SerializeField] Image m_cardImg;//내 자식인 카드 이미지
 
+
+    [SerializeField] Image m_backSide;//카드의 뒷면
+
     public CardInstance cardInstance { get; private set; }//카드 인스턴스 클래스를 has a 함
 
     public bool clickAble;
@@ -56,14 +60,17 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         set
         {
             if (SELECTED_DO_NOT_USE == value || cardtype == CardType.viewerCard) return;
-       
+
+            REDUCTION_DO_NOT_USE = value;
             if (value==true)//여기오면 축소해야함
             {
                 RectTransform rect = GetComponent<RectTransform>();
-                rect.DOSizeDelta(new Vector2(100.0f, 100.0f), 0.5f); // 너비, 높이를 100으로 0.5초에
+                rect.DOSizeDelta(new Vector2(100.0f, 80.0f), 0.5f); // 너비, 높이를 100으로 0.5초에
                 
                 CardNameText.gameObject.SetActive(false);
                 CardTypeText.gameObject.SetActive(false);
+                cardCostText.gameObject.SetActive(false);
+                cardEffectText.gameObject.SetActive(false);
             }
             else//여기오면 확대해야함
             {
@@ -72,7 +79,8 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
                 CardNameText.gameObject.SetActive(true);
                 CardTypeText.gameObject.SetActive(true);
-
+                cardCostText.gameObject.SetActive(true);
+                cardEffectText.gameObject.SetActive(true);
             }
         }
     }
@@ -112,6 +120,57 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
 
         }}//프로퍼티를 이용해,함수가 true가 되거나 false가 될때 특정한 로직을 같이 곁들어 실행하도록 강제할 수 있다
+
+    private bool ISFRONT_DO_NOT_USE = true;
+    public bool isFront //카드 회전 연출용
+    {
+        get
+        {
+            return ISFRONT_DO_NOT_USE;
+        }
+        set
+        {
+            if (ISFRONT_DO_NOT_USE == value || cardtype == CardType.viewerCard|| m_backSide==null) return;
+
+            if (value == true)//여기오면 앞으로 뒤집기
+            {
+                RectTransform rect =m_cardImg. GetComponent<RectTransform>();
+
+                Image backImg = m_backSide.GetComponent<Image>();
+     
+
+                rect.DOLocalRotate(new Vector3(0, 90, 0), 0.25f).OnComplete(() => { backImg.enabled = false; rect.DOLocalRotate(new Vector3(0, 0, 0), 0.25f); });
+         
+
+            }
+            else//여기오면 뒤로 뒤집기
+            {
+                RectTransform rect = m_cardImg.GetComponent<RectTransform>();
+    
+                Image backImg = m_backSide.GetComponent<Image>();
+
+                rect.DOLocalRotate(new Vector3(0, 90, 0), 0.25f).OnComplete(() => { backImg.enabled = true; rect.DOLocalRotate(new Vector3(0, 0, 0), 0.25f);  } );
+            }
+
+
+            ISFRONT_DO_NOT_USE=value;
+        }
+    }
+
+    private void OnEnable()
+    {
+        EventBus.Subscribe<EventBus.FSMChanged>(e_FSMchanged);
+    }
+
+    private void OnDisable()
+    {
+        EventBus.Unsubscribe<EventBus.FSMChanged>(e_FSMchanged);
+    }
+
+    void e_FSMchanged(EventBus.FSMChanged e)
+    {
+        this.selected = false; //상태 변이때마다 선택한 것을 취소시키기로 함.
+    }
 
 
 
@@ -195,6 +254,12 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
             Debug.Log("카드데이터가 안왔다");
         }
     }
+
+ 
+    
+    
+   
+
 
   
 }
