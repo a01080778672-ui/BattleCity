@@ -22,7 +22,7 @@ public class HealEffectSO : EffectSO  //방어 효과를 발동한다. 다만 지금은 회복으
 
     public override string GetCardScript(CardContext ctx)
     {
-        return string.Format("{0} 파워깍기.", healPower);
+        return string.Format("{0} 힐파워", healPower);
     }
 
 }

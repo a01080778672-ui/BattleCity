@@ -36,22 +36,22 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
  
     [SerializeField] TextMeshProUGUI CardNameText;
     [SerializeField] TextMeshProUGUI CardTypeText;
-    [SerializeField] TextMeshProUGUI cardCostText;//임시로 만듦
-    [SerializeField] TextMeshProUGUI cardEffectText;//임시로 만듦
+    [SerializeField] TextMeshProUGUI cardCostText;
+    [SerializeField] TextMeshProUGUI cardEffectText;
 
     [SerializeField] Transform selectedPos;//카드가 선택되어 약간 위로 가야할때의 위치
     [SerializeField] Transform oriPos;//일반 위치
 
-    [SerializeField] Image m_cardImg;//내 자식인 카드 이미지
 
-
-    [SerializeField] Image m_backSide;//카드의 뒷면
+    [SerializeField] GameObject m_Card;//보이는 카드 자체를 말함
+    [SerializeField] GameObject m_FrontSide;//앞면
+    [SerializeField] GameObject m_backSide;//카드의 뒷면
 
     public CardInstance cardInstance { get; private set; }//카드 인스턴스 클래스를 has a 함
 
     public bool clickAble;
     private bool REDUCTION_DO_NOT_USE = false;
-    public bool reduction //카드를 축소하거나 확대하기 위해서 사용
+    public bool reduction //카드를 축소하거나 확대하기 위해서 사용하기위해 만들려했으나 사용하지 않음.
     {
         get
         {
@@ -62,25 +62,19 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
             if (SELECTED_DO_NOT_USE == value || cardtype == CardType.viewerCard) return;
 
             REDUCTION_DO_NOT_USE = value;
-            if (value==true)//여기오면 축소해야함
+            if (value==true)//
             {
                 RectTransform rect = GetComponent<RectTransform>();
-                rect.DOSizeDelta(new Vector2(100.0f, 80.0f), 0.5f); // 너비, 높이를 100으로 0.5초에
+                rect.DOSizeDelta(new Vector2(100.0f, 150.0f), 0.5f); // 너비, 높이를 150으로 0.5초에
                 
-                CardNameText.gameObject.SetActive(false);
-                CardTypeText.gameObject.SetActive(false);
-                cardCostText.gameObject.SetActive(false);
-                cardEffectText.gameObject.SetActive(false);
+              
             }
-            else//여기오면 확대해야함
+            else//
             {
                 RectTransform rect = GetComponent<RectTransform>();
-                rect.DOSizeDelta(new Vector2(100.0f, 150.0f), 0.5f); 
+                rect.DOSizeDelta(new Vector2(100.0f, 150.0f), 0.5f); // 너비, 높이를 150으로 0.5초에
 
-                CardNameText.gameObject.SetActive(true);
-                CardTypeText.gameObject.SetActive(true);
-                cardCostText.gameObject.SetActive(true);
-                cardEffectText.gameObject.SetActive(true);
+               
             }
         }
     }
@@ -101,27 +95,26 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
             if(value==true)//여기로 왔다면 거짓->참 이 되었을것.
             {
-                m_cardImg.transform.localPosition = new Vector3(0, 0, 0);
-                m_cardImg.transform.DOLocalMove(new Vector3(0, 20f, 0), 0.2f);
+                m_Card.transform.localPosition = new Vector3(0, 0, 0);
+                m_Card.transform.DOLocalMove(new Vector3(0, 20f, 0), 0.2f);
 
 
-                //m_cardImg.transform.position=oriPos.position;
-                //m_cardImg.transform.DOMove(selectedPos.position, 0.2f);
+              
 
                transform.localScale = Vector3.one;
             }
             else if(value==false)
             {
-                m_cardImg.transform.DOLocalMove(new Vector3(0,0,0), 0.2f);
+                m_Card.transform.DOLocalMove(new Vector3(0,0,0), 0.2f);
 
 
-                //m_cardImg.transform.DOMove(oriPos.position, 0.2f);
+          
             }
 
 
         }}//프로퍼티를 이용해,함수가 true가 되거나 false가 될때 특정한 로직을 같이 곁들어 실행하도록 강제할 수 있다
 
-    private bool ISFRONT_DO_NOT_USE = true;
+    private bool ISFRONT_DO_NOT_USE = false;
     public bool isFront //카드 회전 연출용
     {
         get
@@ -134,7 +127,7 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
             if (value == true)//여기오면 앞으로 뒤집기
             {
-                RectTransform rect =m_cardImg. GetComponent<RectTransform>();
+                RectTransform rect = m_Card. GetComponent<RectTransform>();
 
                 Image backImg = m_backSide.GetComponent<Image>();
      
@@ -145,11 +138,11 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
             }
             else//여기오면 뒤로 뒤집기
             {
-                RectTransform rect = m_cardImg.GetComponent<RectTransform>();
+                RectTransform rect = m_Card.GetComponent<RectTransform>();
     
                 Image backImg = m_backSide.GetComponent<Image>();
 
-                rect.DOLocalRotate(new Vector3(0, 90, 0), 0.25f).OnComplete(() => { backImg.enabled = true; rect.DOLocalRotate(new Vector3(0, 0, 0), 0.25f);  } );
+                rect.DOLocalRotate(new Vector3(0, 90, 0), 0.25f).OnComplete(() => {  backImg.enabled = true; rect.DOLocalRotate(new Vector3(0, 0, 0), 0.25f);  } );
             }
 
 
@@ -160,11 +153,13 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     private void OnEnable()
     {
         EventBus.Subscribe<EventBus.FSMChanged>(e_FSMchanged);
+        
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe<EventBus.FSMChanged>(e_FSMchanged);
+    
     }
 
     void e_FSMchanged(EventBus.FSMChanged e)
@@ -177,9 +172,13 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     public void OnPointerEnter(PointerEventData eventData)//마우스 올라왔을때
     {
         if(clickAble==false)return;
+        EventBus.Publish<EventBus.CardMouseIn>(new CardMouseIn { card = this });
 
-       if(cardtype == CardType.handCard&& selected == false)
-       transform.localScale=Vector3.one*1.3f;
+        if (cardtype == CardType.handCard && selected == false)
+        {
+            transform.localScale = Vector3.one * 1.3f;
+   
+        }
 
       
     }
@@ -187,9 +186,14 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     public void OnPointerExit(PointerEventData eventData)//마우스 내려왔을때
     {
         if (clickAble == false) return;
+        EventBus.Publish<EventBus.CardMouseOut>(new CardMouseOut { card = this });
 
-        if (cardtype == CardType.handCard )
+
+        if (cardtype == CardType.handCard)
+        {
             transform.localScale = Vector3.one;
+           
+        }
     }
     public void OnPointerDown(PointerEventData eventData)//그것을 누르는 순간
     {

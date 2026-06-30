@@ -62,7 +62,11 @@ public static class EventBus
     public struct CardLeftClickedEvent { public CardView card; }   // 카드 왼쪽 클릭 됐어요
     public struct CardRightClickedEvent { public CardView card; } //카드 오른쪽 클릭 됐어요
 
-   
+    public struct CardMouseIn {  public CardView card; }//마우스위에 카드가 올라왔어요
+
+    public struct CardMouseOut {  public CardView card; }//카드가 내려왔어요
+
+
 
     public struct FSMChanged { public GameState prev; public GameState curr; }//상태기 ???에서 ??? 로 바뀌었어요
 
@@ -111,8 +115,11 @@ public static class EventBus
     public struct StartPlayerTryBlockPhaseEvent { }   // 플레이어의 방어 시도 시작 턴으로 
     public struct StartEnemyMainPhaseEvent { }   // 적 턴 시작 됐어요
     public struct StartEnemySettingBlockCardPhaseEvent { }   // 플레이어 방어 세팅 턴으로 이동합니다
-    public struct StartEnemyTryBlockPhaseEvent { }   // 플레이어의 방어 시도 시작 턴으로 
+    public struct StartEnemyTryBlockPhaseEvent { }   // 플레이어의 방어 시도 시작 턴으로
+    
+    public struct RequestDrawCards {public EntityInstance who; public int number; }//카드를 드로우 해달라 요청하는 이벤트
 
+   
 
 
     /////////////////////////////////////////////////////////// ///////////////////////////////////////////////////////////

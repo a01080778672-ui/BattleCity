@@ -17,6 +17,7 @@ public class CardSwapManager : MonoBehaviour //Ä«µå¸¦ µ¦, ¹«´ý, ¼ÕÆÐ ¿¡¼­ ¿©±â ¿
         EventBus.Subscribe<EventBus.StartPlayerMainPhaseEvent>(e_PlayerMainPhaseStarted);
         EventBus.Subscribe<EventBus.StartEnemyMainPhaseEvent>(e_EnemyMainPhaseStarted);
         EventBus.Subscribe<EventBus.RequestRelocateCard>(e_RequestRelocateCard);
+        EventBus.Subscribe<EventBus.RequestDrawCards>(e_DrawCardEvent);
 
 
         EventBus.Subscribe<EventBus.StartInitPhaseEvent>(e_StartInit);
@@ -30,6 +31,10 @@ public class CardSwapManager : MonoBehaviour //Ä«µå¸¦ µ¦, ¹«´ý, ¼ÕÆÐ ¿¡¼­ ¿©±â ¿
         EventBus.Unsubscribe<EventBus.StartEnemyMainPhaseEvent>(e_EnemyMainPhaseStarted);
 
         EventBus.Unsubscribe<EventBus.RequestRelocateCard>(e_RequestRelocateCard);
+
+        EventBus.Unsubscribe<EventBus.RequestDrawCards>(e_DrawCardEvent);
+
+
 
         EventBus.Unsubscribe<EventBus.StartInitPhaseEvent>(e_StartInit);
     }
@@ -62,8 +67,24 @@ public class CardSwapManager : MonoBehaviour //Ä«µå¸¦ µ¦, ¹«´ý, ¼ÕÆÐ ¿¡¼­ ¿©±â ¿
         }
     }
 
+    void e_DrawCardEvent(EventBus.RequestDrawCards e)
+    {
+        Debug.Log("Ãß°¡µå·Î¿ì");
+        if(e.who.type is EntityInstance.EntityType.player)
+        {
 
-    
+            PlayerDrawCards(_data.player.HandCards.Count+e.number);
+
+
+        }
+        else if (e.who.type is EntityInstance.EntityType.enemy)
+        {
+           EnemyDrawCards(_data.enemy.HandCards.Count+e.number);
+        }
+    }
+
+  
+
     void MoveAllHandCardToGrave()
     {
   

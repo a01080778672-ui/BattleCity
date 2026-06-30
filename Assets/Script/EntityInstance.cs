@@ -6,6 +6,15 @@ using UnityEngine.UI;
 
 public class EntityInstance//캡슐화를 위해 코드의 길이를 많이 늘려버렸습니다.
 {
+   public enum EntityType
+    {
+        player,
+        enemy
+
+
+    }
+    public EntityType type { get; private set; }
+
 
     Slider hpBar;
    TextMeshProUGUI hpText;
@@ -64,9 +73,10 @@ public class EntityInstance//캡슐화를 위해 코드의 길이를 많이 늘려버렸습니다.
 
     public EntityInstance(Slider hpBar,
     TextMeshProUGUI hpText,
-    TextMeshProUGUI energyText)
+    TextMeshProUGUI energyText,
+    EntityType type)
     {
-
+        this.type = type;
         this.hpBar = hpBar;
         this.hpText = hpText;
         this.energyText = energyText;

@@ -24,7 +24,16 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
     [SerializeField] float alarmInitTime = 2.0f;
 
 
- 
+
+    //호버시 보일 큰 카드
+    private CardView currShowCard;
+
+    [SerializeField] GameObject BigHoverUiCard;
+    [SerializeField] TextMeshProUGUI CardNameText;
+    [SerializeField] TextMeshProUGUI CardTypeText;
+    [SerializeField] TextMeshProUGUI cardCostText;
+    [SerializeField] TextMeshProUGUI cardEffectText;
+    //호버시 보일 큰 카드
 
 
 
@@ -32,16 +41,69 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
     {
         EventBus.Subscribe<EventBus.AlarmText>(e_Alarm);
         EventBus.Subscribe<EventBus.FSMChanged>(e_FSMTextChange);
-
+        EventBus.Subscribe<EventBus.CardMouseIn>(e_CardMouseIn);
+        EventBus.Subscribe<EventBus.CardMouseOut>(e_cardMouseOut);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe<EventBus.AlarmText>(e_Alarm);
         EventBus.Unsubscribe<EventBus.FSMChanged>(e_FSMTextChange);
+        EventBus.Unsubscribe<EventBus.CardMouseIn>(e_CardMouseIn);
+        EventBus.Unsubscribe<EventBus.CardMouseOut>(e_cardMouseOut);
 
     }
 
+    void e_CardMouseIn(EventBus.CardMouseIn e)
+    {
+        if (e.card == null||e.card.isFront==false) return;
+
+        BigHoverUiCard.gameObject.SetActive(true);
+        currShowCard=e.card;
+        CardDataSO cardso = e.card.cardInstance.CardDataSO;
+
+        if (cardso != null)
+        {
+            cardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
+            CardNameText.text = cardso.cardName;
+
+            cardEffectText.text = "";
+            foreach (var effect in cardso.hitEffects)
+            {
+                cardEffectText.text += effect.GetCardScript() + "\n";
+                if (cardso.type == CardDataSO.CardType.Block)
+                {
+                    cardEffectText.text += string.Format("{0}방어력", cardso.blockPower) + "\n";
+                }
+            }
+            switch (cardso.type)
+            {
+                case CardDataSO.CardType.Attack:
+                    CardTypeText.text = "공격";
+                    break;
+                case CardDataSO.CardType.Block:
+                    CardTypeText.text = "수비";
+                    break;
+                default:
+                    CardTypeText.text = "타입없음";
+                    break;
+            }
+        }
+        else
+        {
+            Debug.Log("카드데이터가 안왔다");
+        }
+       
+
+
+    }
+    void e_cardMouseOut(EventBus.CardMouseOut e)
+    {
+        if (e.card == null|| currShowCard!=e.card) return;
+
+
+        BigHoverUiCard.gameObject.SetActive(false);
+    }
 
     void e_FSMTextChange(EventBus.FSMChanged e)
     {

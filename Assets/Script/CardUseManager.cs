@@ -9,7 +9,7 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
     [SerializeField] CardDB cardDB;// start()에서 카드를 시작할때 아무거나 만들어주기 위해서 넣었음 지울수도 있음
     [SerializeField]FSMManager fsmManager;
     [SerializeField]GameLoopData _data;
-
+    [SerializeField] int MaxPlayerCapacityBlockCardNumber = 4;
 
     List<CardInstance> currSelectedBlockCards;
 
@@ -147,13 +147,13 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
                         if (fsmManager.GetCurrState() is PlayerMainPhaseState)
                             TryPlayerUseAttackCard(e.card.cardInstance);//카드를 쓰려고 하겠다 공격으로
 
-                        if (fsmManager.GetCurrState() is PlayerSettingBlockPhaseState)//방어 세팅 페이즈에선 공격카드역시 방어존으로 갑니다
+                        if (fsmManager.GetCurrState() is PlayerSettingBlockPhaseState&& _data.player.BlockCards.Count < MaxPlayerCapacityBlockCardNumber)//방어 세팅 페이즈에선 공격카드역시 방어존으로 갑니다
                             EventBus.Publish(new EventBus.RequestRelocateCard { card = item, to = CommonClass.ZoneType.PlayerBlockZone });//카드 스왑 매니저에 있는 카드 이동 시키기 이벤트 터트리기
 
 
                         return;
                     }
-                    else if (_data.player.BlockCards.Count < 5)
+                    else if (_data.player.BlockCards.Count < MaxPlayerCapacityBlockCardNumber)
                     {
                         if (fsmManager.GetCurrState() is PlayerMainPhaseState || fsmManager.GetCurrState() is PlayerSettingBlockPhaseState)
                             EventBus.Publish(new EventBus.RequestRelocateCard { card = item, to = CommonClass.ZoneType.PlayerBlockZone });//카드 스왑 매니저에 있는 카드 이동 시키기 이벤트 터트리기

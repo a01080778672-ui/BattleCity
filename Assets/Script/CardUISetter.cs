@@ -29,11 +29,11 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
     [SerializeField] private RectTransform enemyHandCardLeft;//Àû¼ÕÆÐÄ«µåÁ¸
     [SerializeField] private RectTransform enemyHandCardRight;//Àû¼ÕÆÐÄ«µåÁ¸
 
-    [SerializeField] private RectTransform enemyBlockCardLeft;//Àû°¡µåÁ¸
-    [SerializeField] private RectTransform enemyBlockCardRight;//Àû°¡µåÁ¸
+    [SerializeField] private List<RectTransform> enemyBlockCardZones;//Àû°¡µåÁ¸
 
-    [SerializeField] private RectTransform PlayerBlockCardLeft;//ÇÃ·¹ÀÌ¾î°¡µåÁ¸
-    [SerializeField] private RectTransform PlayerBlockCardRight;//ÇÃ·¹ÀÌ¾î°¡µåÁ¸
+
+    [SerializeField] private List<RectTransform> playerBlockCardZones;//ÇÃ·¹ÀÌ¾î°¡µåÁ¸
+
 
     [SerializeField] private RectTransform PlayerHandCardLeft;//ÇÃ·¹ÀÌ¾î ¼ÕÆÐ ÃÖ´ë ÁÂÃø À§Ä¡
     [SerializeField] private RectTransform PlayerHandCardRight;//ÇÃ·¹ÀÌ¾î ¼ÕÆÐ ÃÖ´ë ¿ìÃø À§Ä¡
@@ -66,6 +66,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
         playerBlockCards = new List<CardView>();
         enemyHandCards=new List<CardView>();
         enemyBlockCards = new List<CardView>();
+    
     }
     private void OnEnable()//ÀÌº¥Æ®¸¦ ±¸µ¶ÇÑ´Ù
     {
@@ -166,7 +167,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                         Debug.Log("¹º°¡ ÀÌ»óÇÏ´Ù");
                     }
                     playerBlockCards.Remove(bufferCard);
-                    ArrangeCardAsList(playerBlockCards, PlayerBlockCardLeft, PlayerBlockCardRight);
+                   ArrangeCardAsBlockZone(playerBlockCards, playerBlockCardZones);
                 }
                     break;
                 case CommonClass.ZoneType.PlayerDeckZone:
@@ -220,7 +221,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                         Debug.LogWarning("¹º°¡ ÀÌ»óÇÏ´Ù");
                     }
                     enemyBlockCards.Remove(bufferCard);
-                    ArrangeCardAsList(enemyBlockCards, enemyBlockCardLeft, enemyBlockCardRight);
+                    ArrangeCardAsBlockZone(enemyBlockCards, enemyBlockCardZones);
                 }
                     break;
                 case CommonClass.ZoneType.EnemyDeckZone:
@@ -295,7 +296,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                     bufferCard.reduction = true;
                     bufferCard.isFront = true;
                     playerBlockCards.Add(bufferCard);
-                        ArrangeCardAsList(playerBlockCards, PlayerBlockCardLeft, PlayerBlockCardRight);
+                    ArrangeCardAsBlockZone(playerBlockCards, playerBlockCardZones);
                     }
                     break;
                 case CommonClass.ZoneType.PlayerDeckZone:
@@ -337,7 +338,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                     bufferCard.isFront = false;
                     bufferCard.clickAble = false;
                     enemyBlockCards.Add(bufferCard);
-                        ArrangeCardAsList(enemyBlockCards, enemyBlockCardLeft, enemyBlockCardRight);
+                    ArrangeCardAsBlockZone(enemyBlockCards, enemyBlockCardZones);
                     }
                     break;
                 case CommonClass.ZoneType.EnemyDeckZone:
@@ -434,7 +435,25 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
         }
     }
 
+    void ArrangeCardAsBlockZone(List<CardView> cards,List<RectTransform>Zones)
+    {
+       // if(cards==null||Zones==null||cards.Count==0||Zones.Count==0) return;
+        int currPointPos = 0;
+        RectTransform currTransform;
 
+        foreach (var item in cards)
+        {
+            currTransform = Zones[currPointPos];
+            item.transform.DORotate(new Vector3(0, 0, 0), 0.5f);
+            item.transform.DOMove(currTransform.position, 0.5f);
+         
+            if (++currPointPos >= Zones.Count)
+            {
+              
+                return;
+            }
+        }
+    }
 
 
     public Vector3 GetWorldPositionFromUI(RectTransform uiElement)//Äµ¹ö½º ÁÂÇ¥¸¦ ÁÖ¸é ¿ùµå ÁÂÇ¥»ó ¾îµð·Î °¡¾ß °Å±â·Î °¡´Â °Í Ã³·³ º¸ÀÌ´ÂÁö ¾Ë·ÁÁØ´Ù.

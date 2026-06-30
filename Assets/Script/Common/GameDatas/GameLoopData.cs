@@ -30,8 +30,8 @@ public class GameLoopData: MonoBehaviour
 
     private void Awake()
     {
-        player = new EntityInstance(playerHpBar,playerHpText,playerEnergyText);
-        enemy = new EntityInstance(enemyHpBar,enemyHpText,enemyEnergyText);
+        player = new EntityInstance(playerHpBar,playerHpText,playerEnergyText,EntityInstance.EntityType.player);
+        enemy = new EntityInstance(enemyHpBar,enemyHpText,enemyEnergyText, EntityInstance.EntityType.enemy);
         currTurn = 1;
 
 
