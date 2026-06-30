@@ -33,6 +33,8 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
     [SerializeField] TextMeshProUGUI CardTypeText;
     [SerializeField] TextMeshProUGUI cardCostText;
     [SerializeField] TextMeshProUGUI cardEffectText;
+    [SerializeField] Sprite m_costIcon;                     // 카드 코스트 스프라이트
+    [SerializeField] RectTransform bigCardCostIconParent;   // 코스트 아이콘 출력을 위한 부모 카드 위치
     //호버시 보일 큰 카드
 
 
@@ -64,7 +66,10 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
 
         if (cardso != null)
         {
-            cardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
+            // cardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
+
+            // 코스트 아이콘 출력 함수 
+            e.card.DisplayCost(cardso.cardCost[0].cost, m_costIcon, bigCardCostIconParent.transform);
             CardNameText.text = cardso.cardName;
 
             cardEffectText.text = "";

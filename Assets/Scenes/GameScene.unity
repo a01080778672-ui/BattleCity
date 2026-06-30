@@ -3244,6 +3244,7 @@ MonoBehaviour:
   CardTypeText: {fileID: 93403321}
   cardCostText: {fileID: 2014449509}
   cardEffectText: {fileID: 449587935}
+  m_costIcon: {fileID: 21300000, guid: b58316a7b0f149b49b52aa47582b6b3f, type: 3}
 --- !u!1 &808039966
 GameObject:
   m_ObjectHideFlags: 0
