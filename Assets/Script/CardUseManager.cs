@@ -47,7 +47,7 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
             _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
         }
         j++;
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 2; i++)
         {
             _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j)));
             _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
@@ -59,6 +59,13 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
             _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
         }
         j++;
+        for (int i = 0; i < 1; i++)
+        {
+            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+        }
+        j++;
+
         for (int i = 0; i < 4; i++)
         {
             _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j)));
@@ -69,11 +76,10 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
         for (int i = 0; i < 2; i++)
         {
             _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j)));
-            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));//8
         }
 
 
-    
     }
 
     private void OnEnable()
@@ -255,7 +261,7 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
         //혹시 모르니 이 함수가 끝났을때 List<CardInstance> currSelectedBlockCards 를 다시 지우기.
         //사용한 카드는 이벤트 버스의 카드 이동을 써서 무덤으로 보내기
 
-        CardContext context = new CardContext{ fsmState = fsmManager.GetCurrState(),usedEntity=_data.enemy,targetEntity=_data.player };
+       
 
 
 
@@ -289,14 +295,14 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
         //여기 밑으로 가면 코스트는 충분함
        _data.player.currEnergy -= cost;//감소처리
 
-        UseCard(context);
+       
 
         
 
 
         foreach (var cardInstance in currSelectedBlockCards)//현재 선택된 방어 카드들로 반복문을 돌립니다.
         {
-            CardContext cardContext=new CardContext { usedCard=cardInstance};
+            CardContext cardContext=new CardContext { usedCard=cardInstance,fsmState=fsmManager.GetCurrState(),usedEntity=_data.player,targetEntity=_data.enemy};
 
             //반복문을 돌려 단일 카드 방어 요청을 여러번 터트립니다.
 
@@ -308,8 +314,10 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
             {
                 blockScore += 1;//방어 카드 아니면 무조껀 1만 증가
             }
-            EventBus.Publish(new EventBus.RequestRelocateCard { card = cardInstance, to = CommonClass.ZoneType.PlayerBlockZone });//카드 스왑 매니저에 있는 카드 이동 시키기 이벤트 터트리기
-         
+           // EventBus.Publish(new EventBus.RequestRelocateCard { card = cardInstance, to = CommonClass.ZoneType.PlayerBlockZone });//카드 스왑 매니저에 있는 카드 이동 시키기 이벤트 터트리기
+
+            if(cardInstance.CardDataSO.type is CardDataSO.CardType.Block)
+            UseCard(cardContext);//방어카드 타입으로 온전히 방어라면 그 카드 효과도 터트려야함
         }
 
 
@@ -431,5 +439,23 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
 
     }
 
+
+    public int CheckCurrSelectedBlockCard()
+    {
+        return currSelectedBlockCards.Count;
+    }
+    public bool CheckBlockSuccess()
+    {
+    if (_data == null || _data.currAttackCard == null) return false;
+    if (fsmManager.GetCurrState() is not PlayerTryBlockPhaseState) return false;
+    
+        int blockScore = 0;//방어력 총합
+
+        foreach (var cardInstance in currSelectedBlockCards)
+        {
+         blockScore += cardInstance.CardDataSO.blockPower;
+        }
+        return _data.currAttackCard.CardDataSO.power <= blockScore;
+    }
 
 }

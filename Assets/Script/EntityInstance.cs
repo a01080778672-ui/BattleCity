@@ -24,8 +24,12 @@ public class EntityInstance//Ä¸½¶È­¸¦ À§ÇØ ÄÚµåÀÇ ±æÀÌ¸¦ ¸¹ÀÌ ´Ã·Á¹ö·È½À´Ï´Ù.
     public int currHp 
         {
            get { return _currHp; }
-        set { _currHp = value;
-        if(hpBar != null&&hpText!=null)
+        set { 
+            
+        _currHp = value;
+
+            if (value >= maxHp) _currHp = maxHp;
+            if (hpBar != null&&hpText!=null)
             {
                 hpBar.value = (float)_currHp / (float)maxHp;
                 hpText.text=string.Format("{0}/{1}",_currHp,maxHp);
@@ -40,8 +44,13 @@ public class EntityInstance//Ä¸½¶È­¸¦ À§ÇØ ÄÚµåÀÇ ±æÀÌ¸¦ ¸¹ÀÌ ´Ã·Á¹ö·È½À´Ï´Ù.
         get { return _currEnergy; }
         set
         {
+
+
             _currEnergy = value;
-            if(energyText!=null)
+
+
+            if(value >= maxEnergy) _currEnergy = maxEnergy;
+            if (energyText!=null)
             {
                 energyText.text=string.Format("{0}/{1}",_currEnergy,maxEnergy);
             }
