@@ -31,8 +31,10 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
     [SerializeField] GameObject BigHoverUiCard;
     [SerializeField] TextMeshProUGUI CardNameText;
     [SerializeField] TextMeshProUGUI CardTypeText;
-    [SerializeField] TextMeshProUGUI cardCostText;
-    [SerializeField] TextMeshProUGUI cardEffectText;
+    [SerializeField] TextMeshProUGUI CardCostText;
+    [SerializeField] TextMeshProUGUI CardEffectText;
+    [SerializeField] TextMeshProUGUI CardBottomAttackNumberText;
+    [SerializeField] TextMeshProUGUI CardBottomPowerNumberText;
     //호버시 보일 큰 카드
 
 
@@ -54,7 +56,7 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
 
     }
 
-    void e_CardMouseIn(EventBus.CardMouseIn e)
+    void e_CardMouseIn(EventBus.CardMouseIn e)//어떤 카드에 마우스가 들어오면
     {
         if (e.card == null||e.card.isFront==false) return;
 
@@ -64,17 +66,29 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
 
         if (cardso != null)
         {
-            cardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
+            CardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
             CardNameText.text = cardso.cardName;
+           CardBottomAttackNumberText.text = cardso.attack.ToString();
+           CardBottomPowerNumberText.text = cardso.power.ToString();
 
-            cardEffectText.text = "";
+
+            CardEffectText.text = "";
             foreach (var effect in cardso.hitEffects)
             {
-                cardEffectText.text += effect.GetCardScript() + "\n";
-                if (cardso.type == CardDataSO.CardType.Block)
+                if (effect.conditions.Length != 0)
                 {
-                    cardEffectText.text += string.Format("{0}방어력", cardso.blockPower) + "\n";
+                    foreach (var condition in effect.conditions)
+                        CardEffectText.text += condition.GetEvaluateScript() + "\n";//조건이 있으면 먼저 적음
                 }
+                
+
+            CardEffectText.text += effect.effects.GetCardScript() + "\n";//그 카드의 적중효과를 적음
+
+              
+            }
+            if (cardso.type == CardDataSO.CardType.Block)
+            {
+                CardEffectText.text += string.Format("{0}방어력", cardso.blockPower) + "\n";
             }
             switch (cardso.type)
             {

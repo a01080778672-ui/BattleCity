@@ -55,6 +55,8 @@ MonoBehaviour:
   CardTypeText: {fileID: 2627857816173608223}
   cardCostText: {fileID: 5751079941258463914}
   cardEffectText: {fileID: 2746958557254253983}
+  BottomDamageNumberText: {fileID: 1287099442636065073}
+  BottomPowerNumbercardEffectText: {fileID: 3165176691081206551}
   selectedPos: {fileID: 2350647159272587371}
   oriPos: {fileID: 3212213814455781155}
   m_Card: {fileID: 3653723687917382175}

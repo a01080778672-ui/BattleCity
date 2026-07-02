@@ -22,14 +22,58 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
 
     private void Start()
     {
-        for (int i = 0; i < 20; i++)
+        int j = 1;
+        for (int i = 0; i < 4; i++)
         {
-            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(i)));
+            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
         }
-        for (int i = 0; i < 20; i++)
+        j++;
+        for (int i = 0; i < 2; i++)
         {
-            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(i)));
+            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
         }
+        j++;
+        for (int i = 0; i < 2; i++)
+        {
+            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+        }
+        j++;
+        for (int i = 0; i < 2; i++)
+        {
+            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+        }
+        j++;
+        for (int i = 0; i < 1; i++)
+        {
+            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+        }
+        j++;
+        for (int i = 0; i < 1; i++)
+        {
+            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+        }
+        j++;
+        for (int i = 0; i < 4; i++)
+        {
+            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+        }
+        j++;
+
+        for (int i = 0; i < 2; i++)
+        {
+            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j)));
+        }
+
+
+    
     }
 
     private void OnEnable()
@@ -211,27 +255,29 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
         //혹시 모르니 이 함수가 끝났을때 List<CardInstance> currSelectedBlockCards 를 다시 지우기.
         //사용한 카드는 이벤트 버스의 카드 이동을 써서 무덤으로 보내기
 
+        CardContext context = new CardContext{ fsmState = fsmManager.GetCurrState(),usedEntity=_data.enemy,targetEntity=_data.player };
+
+
 
         if (_data == null || _data.currAttackCard == null) return;
         if (fsmManager.GetCurrState() is not PlayerTryBlockPhaseState) return;
 
         int blockScore = 0;//방어력 총합
+        int cost = 0;//코스트 총합
 
-        foreach(var cardInstance in currSelectedBlockCards) // 임시 추가 0609 김종호
+        foreach (var cardInstance in currSelectedBlockCards) // 임시 추가 0609 김종호
         {
-            blockScore += cardInstance.CardDataSO.blockPower;
+            blockScore += cardInstance.CardDataSO.blockPower;//반복문 돌기.
+
+            if(cardInstance.CardDataSO.type is CardDataSO.CardType.Block)
+            cost += cardInstance.CardDataSO.cardCost[0].cost;//방어카드의 경우에만 코스트를 합산해 구한다.
         }
-        /*
-       int cost = 0;
-       foreach (var cardContext in currSelectedBlockCards)
-       {
-           cost += card.usedCard.CardDataSO.cardCost[0].cost;//쓸 카드들을 전부 합해 코스트를 구한다.
-           방어 카드는 현재 코스트를 사용하지 않음
-       }
+   
+    
+     
 
-
-       /*
-       if (_data.currPlayerEnergy < cost)
+ 
+       if (_data.player.currEnergy < cost)
        {
            EventBus.Publish(new EventBus.AlarmText
            {
@@ -241,23 +287,11 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
        }
 
         //여기 밑으로 가면 코스트는 충분함
-        EventBus.Publish(new EventBus.RequsetUsePlayerEnergy
-        {
-            energy = cost;//코스트 소모
-            //방어카드는 현재 코스트를 소모하지 않음
-        });*/
+       _data.player.currEnergy -= cost;//감소처리
 
+        UseCard(context);
 
-        foreach (var cardInstance in currSelectedBlockCards)
-        {
-            foreach (var effect in cardInstance.CardDataSO.hitEffects)
-            {
-                //effect.Execute(card);//방어로 쓰는거면 효과를 따로 안 발동합니다.
-                //추후 타입: "방어카드"에 한정해서 효과를 발동시켜야합니다
-            }
-
-
-        }
+        
 
 
         foreach (var cardInstance in currSelectedBlockCards)//현재 선택된 방어 카드들로 반복문을 돌립니다.
@@ -310,27 +344,17 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
 
     void e_EnemySuccessAttack(EventBus.EnemyAttackSuccess e)
     {
-        CardContext context=new CardContext { usedCard=_data.currAttackCard,usedEntity=_data.enemy,targetEntity=_data.player};
+        CardContext context = new CardContext { usedCard = _data.currAttackCard, usedEntity = _data.enemy, targetEntity = _data.player };
 
-        if (context.usedCard == null) return;
-        context.targetEntity.currHp -= context.usedCard.CardDataSO.attack;
-        foreach (var effect in context.usedCard.CardDataSO.hitEffects)
-        {
-            effect.Execute(context);//그 카드가 가진 효과를 전부 수행합니다.
-        }
+        UseCard(context);
 
     }
     void e_PlayerSuccessAttack(EventBus.PlayerAttackSuccess e)
     {
         CardContext context = new CardContext { usedCard = _data.currAttackCard, usedEntity = _data.player, targetEntity = _data.enemy };
 
-        if (context.usedCard == null) return;
-        context.targetEntity.currHp -= context.usedCard.CardDataSO.attack;
-        foreach (var effect in context.usedCard.CardDataSO.hitEffects)
-      {
-          effect.Execute(context);//그 카드가 가진 효과를 전부 수행합니다.
-      }
-     
+        UseCard(context);
+
     }
 
     void TryPlayerUseAttackCard(CardInstance card)//공격 카드를 사용하는것을 판단
@@ -372,7 +396,40 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
     }
 
 
+    void UseCard(CardContext useontext)
+    {
+        CardContext context = useontext;
 
+        if (context.usedCard == null) return;
+
+        if (context.usedCard.CardDataSO.type is CardDataSO.CardType.Attack)
+        {
+            context.targetEntity.currHp -= context.usedCard.CardDataSO.attack;
+        }
+
+
+        foreach (var effect in context.usedCard.CardDataSO.hitEffects)
+        {
+            bool pass = true;
+            foreach (var item in effect.conditions)
+            {
+                if (item.Evaluate(context) == false)
+                { pass = false; break; }
+
+            }
+            if (pass)
+            {
+
+                effect.effects.Execute(context);//조건이 맞다면 그  효과를  수행합니다.
+            }
+
+        }
+
+
+
+     
+
+    }
 
 
 }

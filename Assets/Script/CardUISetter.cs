@@ -149,7 +149,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                         Debug.Log("¹º°¡ ÀÌ»óÇÏ´Ù");
                     }
                     playerHandCards.Remove(bufferCard);
-                    ArrangeCardAsFan(playerHandCards, PlayerHandCardLeft, PlayerHandCardRight);
+                    ArrangeCardAsFan(playerHandCards, PlayerHandCardLeft, PlayerHandCardRight,true);
                 }
                     break;
                 case CommonClass.ZoneType.PlayerBlockZone:
@@ -203,7 +203,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                         Debug.Log("¹º°¡ ÀÌ»óÇÏ´Ù");
                     }
                     enemyHandCards.Remove(bufferCard);
-                    ArrangeCardAsFan(enemyHandCards, enemyHandCardLeft, enemyHandCardRight);
+                    ArrangeCardAsFan(enemyHandCards, enemyHandCardLeft, enemyHandCardRight,false);
                 }
                     break;
                 case CommonClass.ZoneType.EnemyBlockZone:
@@ -285,15 +285,15 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                     return;
                 case CommonClass.ZoneType.PlayerHandZone:
                     {
-                    bufferCard.reduction = false;
+                    bufferCard.AttackMod = false;
                     bufferCard.isFront = true;
                         playerHandCards.Add(bufferCard);
-                        ArrangeCardAsFan(playerHandCards, PlayerHandCardLeft, PlayerHandCardRight);
+                        ArrangeCardAsFan(playerHandCards, PlayerHandCardLeft, PlayerHandCardRight, true);
                     }
                     break;
                 case CommonClass.ZoneType.PlayerBlockZone:
                     {
-                    bufferCard.reduction = true;
+                    bufferCard.AttackMod = false;
                     bufferCard.isFront = true;
                     playerBlockCards.Add(bufferCard);
                     ArrangeCardAsBlockZone(playerBlockCards, playerBlockCardZones);
@@ -301,12 +301,13 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                     break;
                 case CommonClass.ZoneType.PlayerDeckZone:
                     {
-                        bufferCard.selected = false;
+                    bufferCard.selected = false;
                     bufferCard.isFront = true;
                     bufferCard.clickAble = false;
-                        DOTween.Kill(bufferCard.transform);
-                        bufferCard.transform.localScale = Vector3.one;
-                        bufferCard.transform.DOScale(Vector3.zero, 0.7f);
+                    bufferCard.clearMod = true;
+                      
+                      
+                       
                         bufferCard.transform.DOMove(deckIcon.transform.position, 0.7f)
                             .OnComplete(() => Destroy(bufferCard.gameObject));
                     }
@@ -316,25 +317,26 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                         bufferCard.selected = false;
                     bufferCard.isFront = true;
                     bufferCard.clickAble = false;
-                        DOTween.Kill(bufferCard.transform);
-                        bufferCard.transform.localScale = Vector3.one;
-                        bufferCard.transform.DOScale(Vector3.zero, 0.7f);
+                    bufferCard.clearMod = true;
+               
+                
+                      
                         bufferCard.transform.DOMove(graveIcon.transform.position, 0.7f)
                             .OnComplete(() => Destroy(bufferCard.gameObject));
                     }
                     break;
                 case CommonClass.ZoneType.EnemyHandZone:
                     {
-                    bufferCard.reduction = false;
+                    bufferCard.AttackMod = false;
                     bufferCard.isFront = false;
                     bufferCard.clickAble = false;
                         enemyHandCards.Add(bufferCard);
-                        ArrangeCardAsFan(enemyHandCards, enemyHandCardLeft, enemyHandCardRight);
+                        ArrangeCardAsFan(enemyHandCards, enemyHandCardLeft, enemyHandCardRight,false);
                     }
                     break;
                 case CommonClass.ZoneType.EnemyBlockZone:
                     {
-                    bufferCard.reduction = true;
+                    bufferCard.AttackMod = false;
                     bufferCard.isFront = false;
                     bufferCard.clickAble = false;
                     enemyBlockCards.Add(bufferCard);
@@ -347,9 +349,10 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                     bufferCard.isFront = false;
                     bufferCard.selected = false;
                         bufferCard.clickAble = false;
-                        DOTween.Kill(bufferCard.transform);
-                        bufferCard.transform.localScale = Vector3.one;
-                        bufferCard.transform.DOScale(Vector3.zero, 0.7f);
+                    bufferCard.clearMod = true;
+               
+                      
+                   
                         bufferCard.transform.DOMove(enemyDeckIcon.transform.position, 0.7f)
                             .OnComplete(() => Destroy(bufferCard.gameObject));
                     }
@@ -360,20 +363,21 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                     bufferCard.isFront = false;
                     bufferCard.selected = false;
                         bufferCard.clickAble = false;
-                        DOTween.Kill(bufferCard.transform);
-                        bufferCard.transform.localScale = Vector3.one;
-                        bufferCard.transform.DOScale(Vector3.zero, 0.7f);
+                    bufferCard.clearMod = true;
+            
+                       
+                   
                         bufferCard.transform.DOMove(enemyGraveIcon.transform.position, 0.7f)
                             .OnComplete(() => Destroy(bufferCard.gameObject));
                     }
                 break;
             case CommonClass.ZoneType.PlayerAttackZone:
                 {
-                    bufferCard.reduction = true;
+                    bufferCard.AttackMod = true;
                     bufferCard.isFront = true;
                     bufferCard.selected = false;
                     bufferCard.clickAble = false;
-                    bufferCard.transform.DOScale(Vector3.one, 0.7f);
+                   
                     bufferCard.transform.DORotate(new Vector3(0, 0, 0), 0.7f);
                     bufferCard.transform.DOMove(PlayerAttackZone.transform.position, 0.7f);
                     attackCard= bufferCard;
@@ -381,11 +385,11 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
                     break;
             case CommonClass.ZoneType.EnemyAttackZone:
                 {
-                    bufferCard.reduction = true;
+                    bufferCard.AttackMod = true;
                     bufferCard.isFront = true;
                     bufferCard.selected = false;
                     bufferCard.clickAble = false;
-                    bufferCard.transform.DOScale(Vector3.one, 0.7f);
+               
                     bufferCard.transform.DORotate(new Vector3(0, 0, 0), 0.7f);
                     bufferCard.transform.DOMove(EnemyAttackZone.transform.position, 0.7f);
                     attackCard = bufferCard;
@@ -394,7 +398,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
         }
         
     }
-    void ArrangeCardAsFan(List<CardView> cards, RectTransform left, RectTransform right)
+    void ArrangeCardAsFan(List<CardView> cards, RectTransform left, RectTransform right,bool isDown)
     {
         if (cards.Count == 0) return;
 
@@ -412,7 +416,11 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
             float angle = -normalizedT * totalAngle; // ¿ÞÂÊ+, ¿À¸¥ÂÊ-
 
             cards[i].transform.DOMove(newPos, 0.5f);
-            cards[i].transform.DORotate(new Vector3(0f, 0f, angle), 0.5f);
+
+            if(isDown ) 
+                cards[i].transform.DORotate(new Vector3(0f, 0f, angle), 0.5f);
+            else
+                cards[i].transform.DORotate(new Vector3(0f, 0f, -angle), 0.5f);
         }
     }
     void ArrangeCardAsList(List<CardView> cards, RectTransform left, RectTransform right)

@@ -24,7 +24,9 @@ using static EventBus;
 
 public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPointerDownHandler     //카드 하나하나마다 부착될 카드 컴포넌트이다.
 {
- 
+   
+    
+
     enum CardType
     {
         handCard,
@@ -39,6 +41,9 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     [SerializeField] TextMeshProUGUI cardCostText;
     [SerializeField] TextMeshProUGUI cardEffectText;
 
+    [SerializeField] TextMeshProUGUI BottomDamageNumberText;
+    [SerializeField] TextMeshProUGUI BottomPowerNumbercardEffectText;
+
     [SerializeField] Transform selectedPos;//카드가 선택되어 약간 위로 가야할때의 위치
     [SerializeField] Transform oriPos;//일반 위치
 
@@ -47,35 +52,77 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     [SerializeField] GameObject m_FrontSide;//앞면
     [SerializeField] GameObject m_backSide;//카드의 뒷면
 
+
+  
     public CardInstance cardInstance { get; private set; }//카드 인스턴스 클래스를 has a 함
 
     public bool clickAble;
-    private bool REDUCTION_DO_NOT_USE = false;
-    public bool reduction //카드를 축소하거나 확대하기 위해서 사용하기위해 만들려했으나 사용하지 않음.
+
+
+    private bool CLEARMOD_DO_NOT_USE = false;
+
+    public bool clearMod
     {
         get
         {
-            return REDUCTION_DO_NOT_USE;
+            return CLEARMOD_DO_NOT_USE;
+        }
+
+        set
+        {
+
+            if (cardtype is CardType.viewerCard) return;
+            CLEARMOD_DO_NOT_USE = value;
+
+
+            reSizeCard(0.5f);
+
+        }
+
+    }
+
+
+
+
+    private bool HOVERMOD_DO_NOT_USE=false;
+    public bool HoverMod
+    {
+        get
+        {
+            return HOVERMOD_DO_NOT_USE;
+        }
+
+        set
+        {
+         
+            if ( cardtype is CardType.viewerCard) return;
+            HOVERMOD_DO_NOT_USE = value;
+
+        
+            reSizeCard( 0.1f);
+
+        }
+
+    }
+
+    private bool ATTACKMOD_DO_NOT_USE = false;
+    public bool AttackMod //카드를 축소하거나 확대하기 위해서 사용하기위해 만들려했으나 사용하지 않음.
+    {
+        get
+        {
+            return ATTACKMOD_DO_NOT_USE;
         }
         set
         {
-            if (SELECTED_DO_NOT_USE == value || cardtype == CardType.viewerCard) return;
+            if ( cardtype is CardType.viewerCard) return;
 
-            REDUCTION_DO_NOT_USE = value;
-            if (value==true)//
-            {
-                RectTransform rect = GetComponent<RectTransform>();
-                rect.DOSizeDelta(new Vector2(100.0f, 150.0f), 0.5f); // 너비, 높이를 150으로 0.5초에
-                
-              
-            }
-            else//
-            {
-                RectTransform rect = GetComponent<RectTransform>();
-                rect.DOSizeDelta(new Vector2(100.0f, 150.0f), 0.5f); // 너비, 높이를 150으로 0.5초에
 
-               
-            }
+
+            ATTACKMOD_DO_NOT_USE = value;
+
+ 
+
+            reSizeCard( 0.5f);
         }
     }
 
@@ -100,8 +147,8 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
 
               
-
-               transform.localScale = Vector3.one;
+               
+              HoverMod = false;
             }
             else if(value==false)
             {
@@ -150,6 +197,20 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         }
     }
 
+    void reSizeCard(float speed)
+    {
+        float finalSize = 1.0f;
+        if (HoverMod) finalSize *= 1.3f;
+        if (AttackMod) finalSize *= 2.0f;
+
+
+
+        if(clearMod) finalSize = 0.1f;
+
+        Debug.Log(finalSize);
+        transform.DOScale(Vector3.one*finalSize, speed);
+    }
+
     private void OnEnable()
     {
         EventBus.Subscribe<EventBus.FSMChanged>(e_FSMchanged);
@@ -176,8 +237,11 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
         if (cardtype == CardType.handCard && selected == false)
         {
-            transform.localScale = Vector3.one * 1.3f;
-   
+
+
+            HoverMod = true;
+
+
         }
 
       
@@ -191,8 +255,8 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
         if (cardtype == CardType.handCard)
         {
-            transform.localScale = Vector3.one;
-           
+            HoverMod = false;
+
         }
     }
     public void OnPointerDown(PointerEventData eventData)//그것을 누르는 순간
@@ -222,15 +286,33 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         {
             cardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
             CardNameText.text=cardso.cardName;
+            BottomDamageNumberText.text = cardso.attack.ToString();
+            BottomPowerNumbercardEffectText.text = cardso.power.ToString();
+
+
 
             cardEffectText .text = "";
+
+      
+
             foreach (var effect in cardso.hitEffects)
             {
-                cardEffectText.text += effect.GetCardScript() + "\n";
-                if(cardso.type==CardDataSO.CardType.Block)
+                if (effect.conditions.Length != 0)
                 {
-                    cardEffectText.text += string.Format("{0}방어력",cardso.blockPower) + "\n";
+                    foreach (var condition in effect.conditions)
+                    {
+                        cardEffectText.text += condition.GetEvaluateScript() + "\n";//우선 조건이 있으면 조건을 적음
+                    }
+             
                 }
+                cardEffectText.text += effect.effects.GetCardScript() + "\n";//적중효과를 적음
+               
+            }
+
+            if (cardso.type is CardDataSO.CardType.Block)
+            {
+   
+                cardEffectText.text += string.Format("{0}방어력", cardso.blockPower) + "\n";
             }
             switch (cardso.type)
             {

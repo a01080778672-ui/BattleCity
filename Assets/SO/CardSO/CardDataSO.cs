@@ -37,8 +37,15 @@ public class CardDataSO : ScriptableObject
         public int cost;
     }
 
+    [System.Serializable]
+    public struct Bouns
+    {
+        public EffectSO effects;
+        public ConditionSO[] conditions;
+    }
 
-    public int attack;//적중시 줄 데미지
+
+    public int attack;//적중시 줄 기본 데미지
     public int power;//파워(내구도)
     public int blockPower;
 
@@ -47,7 +54,7 @@ public class CardDataSO : ScriptableObject
     public Cost[]cardCost;//코스트가 여러 종류일수도 있다 하였으므로..
     public ColorType colorType;
     public CardType type;//카드의 타입 설정. 이것을 기반해 이름이 정해진다.
-    public List<EffectSO> hitEffects;//적중 효과. EffectSO역시 SO이다 유동적으로 관리 가능. 여러개 넣으면 그 효과들 전부 발동됩니다.
+    public List<Bouns> hitEffects;//적중 효과. 이제는 조건과 함께 묶여서 지낸다.
 
 
     public int cardId;//내가 따로 추가함. 카드의 고유 아이디

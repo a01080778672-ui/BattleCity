@@ -55,6 +55,8 @@ MonoBehaviour:
   CardTypeText: {fileID: 2627857816173608223}
   cardCostText: {fileID: 5751079941258463914}
   cardEffectText: {fileID: 2746958557254253983}
+  BottomDamageNumberText: {fileID: 1287099442636065073}
+  BottomPowerNumbercardEffectText: {fileID: 3165176691081206551}
   selectedPos: {fileID: 2350647159272587371}
   oriPos: {fileID: 3212213814455781155}
   m_Card: {fileID: 3653723687917382175}
@@ -280,7 +282,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.099998474, y: 0.56359863}
+  m_AnchoredPosition: {x: 0.9000015, y: 0.56359863}
   m_SizeDelta: {x: 26.1457, y: 79.9066}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6732870907864468414
@@ -812,7 +814,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 99
+  m_text: 1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 12392bbc8d2050c41b00a3be3492297d, type: 2}
   m_sharedMaterial: {fileID: -3838013754481659536, guid: 12392bbc8d2050c41b00a3be3492297d, type: 2}
@@ -946,7 +948,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 99
+  m_text: 1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 12392bbc8d2050c41b00a3be3492297d, type: 2}
   m_sharedMaterial: {fileID: -3838013754481659536, guid: 12392bbc8d2050c41b00a3be3492297d, type: 2}

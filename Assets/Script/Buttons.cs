@@ -8,7 +8,7 @@ public class Buttons : MonoBehaviour //테스트용 스크립트.
     public void StartInitFSMButtonPutted()
     {
         if(fsmmanager.GetCurrState()==null)
-        EventBus.Publish<EventBus.StartInitPhaseEvent>(new EventBus.StartInitPhaseEvent());
+        EventBus.Publish(new EventBus.StartInitPhaseEvent());
 
         Destroy(this.gameObject);
 

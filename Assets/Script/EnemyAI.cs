@@ -45,7 +45,7 @@ public class EnemyAI : MonoBehaviour //적의 ai이다. 여기서 상태변이도 하게 만들�
         //어떤 카드를 방어존에 놓을지 세팅합니다.
 
         //일단 세팅 안 한채 플레이어에게 턴을 줍니다.
-        yield return new WaitForSeconds(5.0f);
+        yield return new WaitForSeconds(2.0f);
 
         EventBus.Publish(new EventBus.StartPlayerMainPhaseEvent { });
         InitPhaseCor = null;
