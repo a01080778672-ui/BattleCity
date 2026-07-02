@@ -51,7 +51,7 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     [SerializeField] GameObject m_Card;//보이는 카드 자체를 말함
     [SerializeField] GameObject m_FrontSide;//앞면
     [SerializeField] GameObject m_backSide;//카드의 뒷면
-
+    [SerializeField] GameObject m_costIcon;     // 카드 코스트 아이콘
 
   
     public CardInstance cardInstance { get; private set; }//카드 인스턴스 클래스를 has a 함
@@ -201,7 +201,7 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     {
         float finalSize = 1.0f;
         if (HoverMod) finalSize *= 1.3f;
-        if (AttackMod) finalSize *= 2.0f;
+        if (AttackMod) finalSize *= 1.65f;  // 배경 일러스트 수정으로 인해 공격 카드 사용 시 커지는 비율 수정 (2.0 -> 1.65)
 
 
 
@@ -284,7 +284,9 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
         if (cardso != null)
         {
-            cardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
+            //cardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
+
+            DisplayCost(cardso.cardCost[0].cost, m_costIcon);
             CardNameText.text=cardso.cardName;
             BottomDamageNumberText.text = cardso.attack.ToString();
             BottomPowerNumbercardEffectText.text = cardso.power.ToString();
@@ -341,11 +343,81 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         }
     }
 
- 
-    
-    
-   
+    // 카드 코스트 아이콘을 출력하는 함수 추가 ================================== 26.07.03 이재우 업데이트
+    public void DisplayCost(int cost, GameObject costIconObj)
+    {
+        if (costIconObj == null)
+            return;
+
+        // 원본 코스트 아이콘의 위치 가져오기
+        RectTransform baseRect = costIconObj.GetComponent<RectTransform>();
+
+        if (baseRect == null)
+        {
+            Debug.LogWarning("costIconObj에 RectTransform이 없습니다.");
+            return;
+        }
+
+        // 원본 코스트 아이콘을 복사 생성하기 위한 부모 지정
+        Transform parent = costIconObj.transform.parent;
+
+        string clonePrefix = "CostIconClone_";
+
+        // 만약 이전에 코스트 아이콘이 이미 생성되어 있었다면 모두 지우기
+        for (int i = parent.childCount - 1; i >= 0; i--)
+        {
+            Transform child = parent.GetChild(i);
+
+            if (child.gameObject != costIconObj && child.name.StartsWith(clonePrefix))
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        // 코스트가 0인 카드는 아이콘 출력하지 않음.
+        if (cost <= 0)
+        {
+            costIconObj.SetActive(false);
+            return;
+        }
+
+        costIconObj.SetActive(true);
+
+        // 원본 코스트 아이콘의 현재 위치
+        Vector2 startPos = baseRect.anchoredPosition;
+        float xSpacing = -11f;  // 코스트 아이콘 사이의 간격
+
+        // 카드의 코스트가 1 이라면 원본 아이콘 그대로 사용. 그 이상이라면 코스트 만큼 반복해서 생성
+        for (int i = 0; i < cost; i++)
+        {
+            GameObject iconObj;
+
+            if (i == 0)
+            {
+                iconObj = costIconObj;
+            }
+            else
+            {
+                iconObj = Instantiate(costIconObj, parent);
+                iconObj.name = $"{clonePrefix}{i + 1}";
+            }
+
+            RectTransform rect = iconObj.GetComponent<RectTransform>();
+
+            rect.anchoredPosition = new Vector2(
+                startPos.x + xSpacing * i,
+                startPos.y
+            );
+
+            rect.localScale = baseRect.localScale;
+            rect.sizeDelta = baseRect.sizeDelta;
+
+            iconObj.SetActive(true);
+        }
+    }
 
 
-  
+
+
+
 }
