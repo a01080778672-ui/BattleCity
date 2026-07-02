@@ -2176,6 +2176,11 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!224 &573412239 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4476473469815058033, guid: 9ae8bd02aa4a9dc478d4e48f22a1bdaf, type: 3}
+  m_PrefabInstance: {fileID: 1103676176}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &609426550
 GameObject:
   m_ObjectHideFlags: 0
@@ -3244,6 +3249,8 @@ MonoBehaviour:
   CardTypeText: {fileID: 93403321}
   cardCostText: {fileID: 2014449509}
   cardEffectText: {fileID: 449587935}
+  m_costIcon: {fileID: 21300000, guid: b58316a7b0f149b49b52aa47582b6b3f, type: 3}
+  bigCardCostIconParent: {fileID: 573412239}
 --- !u!1 &808039966
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using DG.Tweening; 
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -5,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using DG.Tweening; 
+using static CardDataSO;
 using static EventBus;
 
 
@@ -46,6 +47,9 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     [SerializeField] GameObject m_Card;//보이는 카드 자체를 말함
     [SerializeField] GameObject m_FrontSide;//앞면
     [SerializeField] GameObject m_backSide;//카드의 뒷면
+    [SerializeField] GameObject m_cardIllustration;//카드 일러스트
+
+    [SerializeField] Sprite m_costIcon;//코스트 아이콘
 
     public CardInstance cardInstance { get; private set; }//카드 인스턴스 클래스를 has a 함
 
@@ -220,7 +224,10 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
         if (cardso != null)
         {
-            cardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
+            // cardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
+
+            // 카드 코스트 아이콘 출력 함수
+            DisplayCost(cardso.cardCost[0].cost, m_costIcon, m_FrontSide.transform);
             CardNameText.text=cardso.cardName;
 
             cardEffectText .text = "";
@@ -259,8 +266,43 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         }
     }
 
- 
-    
+    // 카드 우측 상단에 코스트만큼 아이콘 띄우는 함수 추가 - 26.06.30 이재우
+    public void DisplayCost(int cost, Sprite costIcon, Transform parent)
+    {
+        if (cost <= 0 || costIcon == null)
+            return;
+
+        // 기존 코스트 아이콘 제거
+        for (int i = parent.childCount - 1; i >= 0; i--)
+        {
+            if (parent.GetChild(i).name.StartsWith("코스트 아이콘"))
+            {
+                Destroy(parent.GetChild(i).gameObject);
+            }
+        }
+
+        Vector2 startPos = new Vector2(48f, 73.5f);
+        float xSpacing = -11f;
+
+        for (int i = 0; i < cost; i++)
+        {
+            GameObject iconObj = new GameObject($"CostIcon_{i + 1}");
+
+            iconObj.transform.SetParent(parent, false);
+
+            RectTransform rect = iconObj.AddComponent<RectTransform>();
+            rect.anchoredPosition = new Vector2(
+                startPos.x + xSpacing * i,
+                startPos.y
+            );
+
+            rect.localScale = Vector3.one * 0.1f;
+
+            Image image = iconObj.AddComponent<Image>();
+            image.sprite = costIcon;
+            image.raycastTarget = false;
+        }
+    }
     
    
 
