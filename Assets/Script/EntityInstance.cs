@@ -6,8 +6,7 @@ using UnityEngine.UI;
 
 public class EntityInstance//캡슐화를 위해 코드의 길이를 많이 늘려버렸습니다.
 {
-    int playerHP = 10;
-    int enemyHP = 10;
+    int MaxHP = 10;
 
    public enum EntityType
     {
@@ -94,7 +93,7 @@ public class EntityInstance//캡슐화를 위해 코드의 길이를 많이 늘려버렸습니다.
         this.energyText = energyText;
 
 
-        _currHp = maxHp = playerHP;
+        _currHp = maxHp = MaxHP;
         currEnergy = 0;
         maxEnergy = 5;
 
