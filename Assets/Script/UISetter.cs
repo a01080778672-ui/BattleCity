@@ -35,6 +35,7 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
     [SerializeField] TextMeshProUGUI CardEffectText;
     [SerializeField] TextMeshProUGUI CardBottomAttackNumberText;
     [SerializeField] TextMeshProUGUI CardBottomPowerNumberText;
+    [SerializeField] GameObject m_cardIcon;
     //호버시 보일 큰 카드
 
 
@@ -66,10 +67,12 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
 
         if (cardso != null)
         {
-            CardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
+            //CardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
+
+            e.card.DisplayCost(cardso.cardCost[0].cost, m_cardIcon);
             CardNameText.text = cardso.cardName;
-           CardBottomAttackNumberText.text = cardso.attack.ToString();
-           CardBottomPowerNumberText.text = cardso.power.ToString();
+            CardBottomAttackNumberText.text = cardso.attack.ToString();
+            CardBottomPowerNumberText.text = cardso.power.ToString();
 
 
             CardEffectText.text = "";

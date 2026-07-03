@@ -3365,6 +3365,7 @@ MonoBehaviour:
   CardEffectText: {fileID: 449587935}
   CardBottomAttackNumberText: {fileID: 1792028723}
   CardBottomPowerNumberText: {fileID: 1870913089}
+  m_cardIcon: {fileID: 2056087785}
 --- !u!1 &808039966
 GameObject:
   m_ObjectHideFlags: 0
@@ -9571,6 +9572,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2048292667}
   m_CullTransparentMesh: 1
+--- !u!1 &2056087785 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4232635109881557327, guid: 9ae8bd02aa4a9dc478d4e48f22a1bdaf, type: 3}
+  m_PrefabInstance: {fileID: 1103676176}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2058016404
 GameObject:
   m_ObjectHideFlags: 0
