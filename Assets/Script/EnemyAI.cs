@@ -1,22 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static CommonClass;
 
-public class EnemyAI : MonoBehaviour //적의 ai이다. 여기서 상태변이도 하게 만들어야 하려나? 일단 그렇게 해보자.
+public class EnemyAI : MonoBehaviour
 {
-    [SerializeField]GameLoopData _data;
+    [SerializeField] GameLoopData _data;
+    [SerializeField] int maxEnemyCapacityBlockCardNumber = 4;
+    [SerializeField] float initPhaseDelay = 2.0f;
+    [SerializeField] float mainPhaseDelay = 5.0f;
+    [SerializeField] float tryBlockDelay = 5.0f;
+
+    readonly DakgongAlgorithm dakgongAlgorithm = new DakgongAlgorithm();
+
     Coroutine TryBlockCor;
     Coroutine MainPhaseCor;
     Coroutine InitPhaseCor;
+
     private void Awake()
     {
         TryBlockCor = null;
         MainPhaseCor = null;
         InitPhaseCor = null;
     }
+
     private void OnEnable()
     {
         EventBus.Subscribe<EventBus.StartInitPhaseEvent>(e_StartAI);
@@ -31,21 +37,15 @@ public class EnemyAI : MonoBehaviour //적의 ai이다. 여기서 상태변이도 하게 만들�
         EventBus.Unsubscribe<EventBus.StartEnemyMainPhaseEvent>(e_MainEnemyPhase);
     }
 
-    void e_StartAI(EventBus.StartInitPhaseEvent e)//게임 시작시 ai가 할 것
+    void e_StartAI(EventBus.StartInitPhaseEvent e)
     {
-
         if (InitPhaseCor != null) return;
         InitPhaseCor = StartCoroutine(InitPhase());
     }
+
     IEnumerator InitPhase()
     {
-
-        //카드 스왑 매니저에서 이미 드로우는 있음.
-
-        //어떤 카드를 방어존에 놓을지 세팅합니다.
-
-        //일단 세팅 안 한채 플레이어에게 턴을 줍니다.
-        yield return new WaitForSeconds(2.0f);
+        yield return new WaitForSeconds(initPhaseDelay);
 
         EventBus.Publish(new EventBus.StartPlayerMainPhaseEvent { });
         InitPhaseCor = null;
@@ -54,25 +54,59 @@ public class EnemyAI : MonoBehaviour //적의 ai이다. 여기서 상태변이도 하게 만들�
     void e_TryBlock(EventBus.StartEnemyTryBlockPhaseEvent e)
     {
         if (TryBlockCor != null) return;
-       TryBlockCor=StartCoroutine(TryBlock());
-
+        TryBlockCor = StartCoroutine(TryBlock());
     }
+
     IEnumerator TryBlock()
     {
-        //플레이어가 공격을 해와서, 방어를 시도합니다.
-        int rand = Random.Range(0, 10); // 임시로 추가 0609김종호
+        CardInstance incomingAttackCard = _data != null ? _data.currAttackCard : null;
+        yield return new WaitForSeconds(tryBlockDelay);
 
-        //일단 아무것도 방어 안하고 즉시 포기합니다.
-        bool blockSuccessed = false;
+        if (incomingAttackCard == null)
+        {
+            EventBus.Publish(new EventBus.StartPlayerMainPhaseEvent { });
+            TryBlockCor = null;
+            yield break;
+        }
 
-        //blockSuccessed = rand > _data.currAttackCard.CardDataSO.power; // 임시로 추가 0609김종호
+        if (!dakgongAlgorithm.ShouldDefend(_data.enemy, incomingAttackCard))
+        {
+            EventBus.Publish(new EventBus.AlarmText { alarmText = "Enemy takes the attack." });
+            EventBus.Publish(new EventBus.PlayerAttackSuccess { });
+            EventBus.Publish(new EventBus.StartPlayerMainPhaseEvent { });
+            TryBlockCor = null;
+            yield break;
+        }
 
-        yield return new WaitForSeconds(5.0f);
+        List<CardInstance> blockCards = dakgongAlgorithm.ChooseBlockCards(_data.enemy, incomingAttackCard);
+        if (blockCards.Count == 0)
+        {
+            EventBus.Publish(new EventBus.AlarmText { alarmText = "Enemy cannot fully block." });
+            EventBus.Publish(new EventBus.PlayerAttackSuccess { });
+            EventBus.Publish(new EventBus.StartPlayerMainPhaseEvent { });
+            TryBlockCor = null;
+            yield break;
+        }
 
-        if (blockSuccessed == false) EventBus.Publish(new EventBus.PlayerAttackSuccess { });//무조껀 공격에 맞음...
-        else EventBus.Publish(new EventBus.AlarmText{ alarmText = $"적이 {rand}의 방어력으로 {_data.currAttackCard.CardDataSO.power}를 방어 성공하였습니다." }); // 임시로 추가 0609김종호
+        foreach (CardInstance blockCard in blockCards)
+        {
+            UseDefenseCardEffect(blockCard);
+            EventBus.Publish(new EventBus.RequestRelocateCard
+            {
+                card = blockCard,
+                to = CommonClass.ZoneType.EnemyGraveZone
+            });
+        }
 
-
+        EventBus.Publish(new EventBus.AlarmText
+        {
+            alarmText = $"Enemy blocks with {blockCards.Count} card(s)."
+        });
+        EventBus.Publish(new EventBus.RequestRelocateCard
+        {
+            card = incomingAttackCard,
+            to = CommonClass.ZoneType.PlayerGraveZone
+        });
         EventBus.Publish(new EventBus.StartPlayerMainPhaseEvent { });
         TryBlockCor = null;
     }
@@ -80,54 +114,111 @@ public class EnemyAI : MonoBehaviour //적의 ai이다. 여기서 상태변이도 하게 만들�
     void e_MainEnemyPhase(EventBus.StartEnemyMainPhaseEvent e)
     {
         if (MainPhaseCor != null) return;
-        MainPhaseCor =StartCoroutine(EnemyMainPhase());  
+        MainPhaseCor = StartCoroutine(EnemyMainPhase());
     }
-    
-    
-   
+
     IEnumerator EnemyMainPhase()
     {
-        //적의 메인 페이즈때 할 행동을 적습니다.
-        //_data.enemy.currEnergy += 2;     //턴을 받으면 2 에너지를 충전합니다.
+        yield return new WaitForSeconds(mainPhaseDelay);
 
-        yield return new WaitForSeconds(5.0f);
+        SetDefenseCardsByAlgorithm();
 
-
-        bool isAttacked = false;
-        int i = 0;
-        while(i<_data.enemy.HandCards.Count)
+        CardInstance attackCard = dakgongAlgorithm.ChooseAttackCard(_data.enemy);
+        if (attackCard == null)
         {
-         
-            if (_data.enemy.HandCards[i].CardDataSO.type == CardDataSO.CardType.Attack)
-            {
-                EventBus.Publish(new EventBus.RequestRelocateCard { card = _data.enemy.HandCards[i], to = CommonClass.ZoneType.EnemyAttackZone });
-                EventBus.Publish(new EventBus.AlarmText { alarmText = $"적이 {_data.currAttackCard.CardDataSO.attack}의 공격력으로 공격하였습니다." });
-                EventBus.Publish(new EventBus.StartPlayerTryBlockPhaseEvent { }); // 임시로 추가 공격후 플레이어 방어 시도 턴으로 변경해야 할듯함...
-                isAttacked = true;
-                break;
-            }
-            else
-            {
-                i++;
-            }
-
-           
-        }
-       
-        if (isAttacked==false)
-        {
-            EventBus.Publish(new EventBus.StartPlayerMainPhaseEvent { });//그냥 바로바로 플레이어 턴으로 넘겨주는 것으로....
+            EventBus.Publish(new EventBus.AlarmText { alarmText = "Enemy has no playable attack." });
+            EventBus.Publish(new EventBus.StartPlayerMainPhaseEvent { });
+            MainPhaseCor = null;
+            yield break;
         }
 
-           
-        
+        PitchCardsForAttack(attackCard);
 
+        int cost = dakgongAlgorithm.GetCardCost(attackCard);
+        if (_data.enemy.currEnergy < cost)
+        {
+            EventBus.Publish(new EventBus.AlarmText { alarmText = "Enemy does not have enough energy." });
+            EventBus.Publish(new EventBus.StartPlayerMainPhaseEvent { });
+            MainPhaseCor = null;
+            yield break;
+        }
 
+        _data.enemy.currEnergy -= cost;
+        EventBus.Publish(new EventBus.RequestRelocateCard
+        {
+            card = attackCard,
+            to = CommonClass.ZoneType.EnemyAttackZone
+        });
 
-
-
-        MainPhaseCor =null;
+        EventBus.Publish(new EventBus.AlarmText
+        {
+            alarmText = $"Enemy attacks with {attackCard.CardDataSO.cardName}."
+        });
+        EventBus.Publish(new EventBus.StartPlayerTryBlockPhaseEvent { });
+        MainPhaseCor = null;
     }
 
+    void SetDefenseCardsByAlgorithm()
+    {
+        if (_data == null || _data.enemy == null) return;
 
+        List<CardInstance> defenseCards = dakgongAlgorithm.ChooseDefenseSetCards(_data.enemy, maxEnemyCapacityBlockCardNumber);
+        foreach (CardInstance card in defenseCards)
+        {
+            EventBus.Publish(new EventBus.RequestRelocateCard
+            {
+                card = card,
+                to = CommonClass.ZoneType.EnemyBlockZone
+            });
+        }
+    }
+
+    void PitchCardsForAttack(CardInstance attackCard)
+    {
+        List<CardInstance> pitchCards = dakgongAlgorithm.ChoosePitchCards(_data.enemy, attackCard);
+        foreach (CardInstance card in pitchCards)
+        {
+            EventBus.Publish(new EventBus.RequestRelocateCard
+            {
+                card = card,
+                to = CommonClass.ZoneType.EnemyGraveZone
+            });
+            _data.enemy.currEnergy += 1;
+        }
+    }
+
+    void UseDefenseCardEffect(CardInstance card)
+    {
+        if (card == null || card.CardDataSO == null) return;
+        if (card.CardDataSO.type != CardDataSO.CardType.Block) return;
+        if (card.CardDataSO.hitEffects == null) return;
+
+        CardContext context = new CardContext
+        {
+            usedCard = card,
+            usedEntity = _data.enemy,
+            targetEntity = _data.player
+        };
+
+        foreach (var effectData in card.CardDataSO.hitEffects)
+        {
+            bool canUseEffect = true;
+            if (effectData.conditions != null)
+            {
+                foreach (var condition in effectData.conditions)
+                {
+                    if (condition != null && !condition.Evaluate(context))
+                    {
+                        canUseEffect = false;
+                        break;
+                    }
+                }
+            }
+
+            if (canUseEffect && effectData.effects != null)
+            {
+                effectData.effects.Execute(context);
+            }
+        }
+    }
 }
