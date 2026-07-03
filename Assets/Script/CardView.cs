@@ -52,8 +52,9 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
     [SerializeField] GameObject m_FrontSide;//앞면
     [SerializeField] GameObject m_backSide;//카드의 뒷면
     [SerializeField] GameObject m_costIcon;     // 카드 코스트 아이콘
+    [SerializeField] Image illustration;//일러스트 부분
 
-  
+
     public CardInstance cardInstance { get; private set; }//카드 인스턴스 클래스를 has a 함
 
     public bool clickAble;
@@ -294,8 +295,8 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
 
             cardEffectText .text = "";
+            illustration.sprite = cardso.illustration;
 
-      
 
             foreach (var effect in cardso.hitEffects)
             {

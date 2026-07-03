@@ -63,6 +63,7 @@ MonoBehaviour:
   m_FrontSide: {fileID: 3483137183905851336}
   m_backSide: {fileID: 2779030380645209011}
   m_costIcon: {fileID: 4232635109881557327}
+  illustration: {fileID: 8340702551936433098}
   clickAble: 0
 --- !u!1 &813701299581242835
 GameObject:

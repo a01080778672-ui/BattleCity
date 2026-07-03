@@ -36,6 +36,7 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
     [SerializeField] TextMeshProUGUI CardBottomAttackNumberText;
     [SerializeField] TextMeshProUGUI CardBottomPowerNumberText;
     [SerializeField] GameObject m_cardIcon;
+    [SerializeField] Image illustration;
     //호버시 보일 큰 카드
 
 
@@ -76,6 +77,8 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
 
 
             CardEffectText.text = "";
+            illustration.sprite = cardso.illustration;
+
             foreach (var effect in cardso.hitEffects)
             {
                 if (effect.conditions.Length != 0)
