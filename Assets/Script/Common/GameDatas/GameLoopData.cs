@@ -21,7 +21,7 @@ public class GameLoopData: MonoBehaviour
     [SerializeField] Slider enemyHpBar;
     [SerializeField] TextMeshProUGUI enemyHpText;
     [SerializeField] TextMeshProUGUI enemyEnergyText;
-
+    [SerializeField]ModifierSystem modifierSystem;
 
     public int currTurn;
     public EntityInstance player { get; private set; }
@@ -30,8 +30,8 @@ public class GameLoopData: MonoBehaviour
 
     private void Awake()
     {
-        player = new EntityInstance(playerHpBar,playerHpText,playerEnergyText,EntityInstance.EntityType.player);
-        enemy = new EntityInstance(enemyHpBar,enemyHpText,enemyEnergyText, EntityInstance.EntityType.enemy);
+        player = new EntityInstance(playerHpBar,playerHpText,playerEnergyText,IModifierOwner.UserType.player, modifierSystem);
+        enemy = new EntityInstance(enemyHpBar,enemyHpText,enemyEnergyText, IModifierOwner.UserType.enemy, modifierSystem);
         currTurn = 1;
 
 

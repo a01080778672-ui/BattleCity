@@ -77,10 +77,13 @@ public static class EventBus
     public struct BlockButtonClicked { }//방어하기 버튼이 눌렸어요(적의 공격을 막기위해 방어를 하는데 그거 말한거)
 
 
-    public struct PlayerAttackSuccess { public CardContext card;  }//플레이어의 공격 카드가 적중했을시 이걸 실행시킨다.
+    public struct PlayerAttackSuccess { public CardContext card;public IModifierOwner player; public IModifierOwner enemy; }//플레이어의 공격 카드가 적중했을시 이걸 실행시킨다.
 
-    public struct EnemyAttackSuccess { public CardContext card; }//적의 공격 카드가 적중했을시 이걸 실행시킨다.
+    public struct EnemyAttackSuccess { public CardContext card; public IModifierOwner player; public IModifierOwner enemy; }//적의 공격 카드가 적중했을시 이걸 실행시킨다.
 
+    public struct CardBuffChanged { public CardInstance card; }//카드의 버프 내역이 변경되었어요! (카드의UI숫자 갱신을 위해서)
+
+    public struct EntityBuffChanged { public EntityInstance entity; }//카드의 버프 내역이 변경되었어요! (카드의UI숫자 갱신을 위해서)
 
     /////////////////////////////////////////////////////////// ///////////////////////////////////////////////////////////
 

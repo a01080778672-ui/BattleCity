@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     [SerializeField] GameLoopData _data;
+    [SerializeField] FSMManager fsmManager;
     [SerializeField] int maxEnemyCapacityBlockCardNumber = 4;
     [SerializeField] float initPhaseDelay = 2.0f;
     [SerializeField] float mainPhaseDelay = 5.0f;
@@ -72,7 +73,7 @@ public class EnemyAI : MonoBehaviour
         if (!dakgongAlgorithm.ShouldDefend(_data.enemy, incomingAttackCard))
         {
             EventBus.Publish(new EventBus.AlarmText { alarmText = "Enemy takes the attack." });
-            EventBus.Publish(new EventBus.PlayerAttackSuccess { });
+            EventBus.Publish(new EventBus.PlayerAttackSuccess {player=_data.player,enemy=_data.enemy });
             EventBus.Publish(new EventBus.StartPlayerMainPhaseEvent { });
             TryBlockCor = null;
             yield break;
@@ -82,7 +83,7 @@ public class EnemyAI : MonoBehaviour
         if (blockCards.Count == 0)
         {
             EventBus.Publish(new EventBus.AlarmText { alarmText = "Enemy cannot fully block." });
-            EventBus.Publish(new EventBus.PlayerAttackSuccess { });
+            EventBus.Publish(new EventBus.PlayerAttackSuccess { player = _data.player, enemy = _data.enemy });
             EventBus.Publish(new EventBus.StartPlayerMainPhaseEvent { });
             TryBlockCor = null;
             yield break;
@@ -152,7 +153,7 @@ public class EnemyAI : MonoBehaviour
 
         EventBus.Publish(new EventBus.AlarmText
         {
-            alarmText = $"Enemy attacks with {attackCard.CardDataSO.cardName}."
+            alarmText = $"Enemy attacks with {attackCard.GetCardName()}."
         });
         EventBus.Publish(new EventBus.StartPlayerTryBlockPhaseEvent { });
         MainPhaseCor = null;
@@ -189,18 +190,15 @@ public class EnemyAI : MonoBehaviour
 
     void UseDefenseCardEffect(CardInstance card)
     {
-        if (card == null || card.CardDataSO == null) return;
-        if (card.CardDataSO.type != CardDataSO.CardType.Block) return;
-        if (card.CardDataSO.hitEffects == null) return;
+        if (card == null || card.isCardDataSOVaild()==false) return;
+        if (card.GetCardType() != CardDataSO.CardType.Block) return;
+       
 
-        CardContext context = new CardContext
-        {
-            usedCard = card,
-            usedEntity = _data.enemy,
-            targetEntity = _data.player
-        };
+        CardContext context = new CardContext(card, fsmManager.GetCurrState(), _data, _data.enemy, _data.player);
 
-        foreach (var effectData in card.CardDataSO.hitEffects)
+     
+
+        foreach (var effectData in card.GetHitEffects())
         {
             bool canUseEffect = true;
             if (effectData.conditions != null)

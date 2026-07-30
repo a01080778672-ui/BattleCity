@@ -4018,6 +4018,7 @@ MonoBehaviour:
   fsmManager: {fileID: 384124004}
   _data: {fileID: 1235726476}
   MaxPlayerCapacityBlockCardNumber: 4
+  modifierSystem: {fileID: 1931822433}
 --- !u!4 &870852368
 Transform:
   m_ObjectHideFlags: 0
@@ -5991,6 +5992,7 @@ MonoBehaviour:
   enemyHpBar: {fileID: 1004137976}
   enemyHpText: {fileID: 244180869}
   enemyEnergyText: {fileID: 0}
+  modifierSystem: {fileID: 1931822433}
   currTurn: 0
 --- !u!1 &1277534501
 GameObject:
@@ -7464,6 +7466,7 @@ Transform:
   - {fileID: 1920492330}
   - {fileID: 1535062152}
   - {fileID: 664812110}
+  - {fileID: 1931822432}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1518971099
@@ -8617,7 +8620,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1754209913}
   m_Layer: 0
-  m_Name: OnlyGameData
+  m_Name: GameData
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9193,10 +9196,55 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 1235726476}
+  fsmManager: {fileID: 384124004}
   maxEnemyCapacityBlockCardNumber: 4
   initPhaseDelay: 2
   mainPhaseDelay: 5
   tryBlockDelay: 5
+--- !u!1 &1931822431
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1931822432}
+  - component: {fileID: 1931822433}
+  m_Layer: 0
+  m_Name: ModifierManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1931822432
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1931822431}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1498888124}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1931822433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1931822431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3000f90ef1a4db4a8de737145d06f21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1947002064
 GameObject:
   m_ObjectHideFlags: 0

@@ -39,8 +39,9 @@ public class CardDataSO : ScriptableObject
     }
 
     [System.Serializable]
-    public struct Bouns
+    public struct EffectDefinition
     {
+        
         public EffectSO effects;
         public ConditionSO[] conditions;
     }
@@ -48,7 +49,7 @@ public class CardDataSO : ScriptableObject
 
     public int attack;//적중시 줄 기본 데미지
     public int power;//파워(내구도)
-    public int blockPower;
+    public int blockPower;//방어카드일시 유효할것이다. 방어력이다.
 
 
     public string cardName;
@@ -56,7 +57,7 @@ public class CardDataSO : ScriptableObject
     public Sprite illustration;//일러스트
     public ColorType colorType;
     public CardType type;//카드의 타입 설정. 이것을 기반해 이름이 정해진다.
-    public List<Bouns> hitEffects;//적중 효과. 이제는 조건과 함께 묶여서 지낸다.
+    public List<EffectDefinition> hitEffects;//적중 효과. 이제는 조건과 함께 묶여서 지낸다.
 
 
     public int cardId;//내가 따로 추가함. 카드의 고유 아이디

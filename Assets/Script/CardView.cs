@@ -208,27 +208,44 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
 
         if(clearMod) finalSize = 0.1f;
 
-        Debug.Log(finalSize);
+ 
         transform.DOScale(Vector3.one*finalSize, speed);
     }
 
     private void OnEnable()
     {
         EventBus.Subscribe<EventBus.FSMChanged>(e_FSMchanged);
+        EventBus.Subscribe<EventBus.CardBuffChanged>(e_BuffChanged);
+        EventBus.Subscribe<EventBus.EntityBuffChanged>(e_BuffChanged);
         
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe<EventBus.FSMChanged>(e_FSMchanged);
-    
+        EventBus.Unsubscribe<EventBus.CardBuffChanged>(e_BuffChanged);
+        EventBus.Unsubscribe<EventBus.EntityBuffChanged>(e_BuffChanged);
     }
 
     void e_FSMchanged(EventBus.FSMChanged e)
     {
         this.selected = false; //상태 변이때마다 선택한 것을 취소시키기로 함.
     }
+    void e_BuffChanged(EventBus.EntityBuffChanged e)
+    {
+        if (e.entity == cardInstance.owner)
+        {
+            Init(this.cardInstance);
+        }
+    }
 
+    void e_BuffChanged(EventBus.CardBuffChanged e)
+    {
+        if(e.card==this.cardInstance)
+        {
+            Init(this.cardInstance);
+        }
+    }
 
 
     public void OnPointerEnter(PointerEventData eventData)//마우스 올라왔을때
@@ -281,24 +298,24 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
         selected = false;//프로퍼티에 초기화
         clickAble = true;
 
-        CardDataSO cardso = cardInstance.CardDataSO;
+        
 
-        if (cardso != null)
+        if (cardInstance.isCardDataSOVaild()==true)
         {
-            //cardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
 
-            DisplayCost(cardso.cardCost[0].cost, m_costIcon);
-            CardNameText.text=cardso.cardName;
-            BottomDamageNumberText.text = cardso.attack.ToString();
-            BottomPowerNumbercardEffectText.text = cardso.power.ToString();
+
+            DisplayCost(cardInstance.GetCardCost()[0].cost, m_costIcon);
+            CardNameText.text=cardInstance.GetCardName();
+            BottomDamageNumberText.text = cardInstance.GetAttack().ToString();
+            BottomPowerNumbercardEffectText.text = cardInstance.GetPower().ToString();
 
 
 
             cardEffectText .text = "";
-            illustration.sprite = cardso.illustration;
+            illustration.sprite = cardInstance.GetIllustration();
 
 
-            foreach (var effect in cardso.hitEffects)
+            foreach (var effect in cardInstance.GetHitEffects())
             {
                 if (effect.conditions.Length != 0)
                 {
@@ -312,12 +329,12 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
                
             }
 
-            if (cardso.type is CardDataSO.CardType.Block)
+            if (cardInstance.GetCardType() is CardDataSO.CardType.Block)
             {
    
-                cardEffectText.text += string.Format("{0}방어력", cardso.blockPower) + "\n";
+                cardEffectText.text += string.Format("{0}방어력", cardInstance.GetBlockPower()) + "\n";
             }
-            switch (cardso.type)
+            switch (cardInstance.GetCardType())
             {
                 case CardDataSO.CardType.Attack:
                     CardTypeText.text = "공격";

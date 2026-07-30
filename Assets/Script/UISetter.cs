@@ -62,24 +62,32 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
     {
         if (e.card == null||e.card.isFront==false) return;
 
+
+        
+
+
         BigHoverUiCard.gameObject.SetActive(true);
         currShowCard=e.card;
-        CardDataSO cardso = e.card.cardInstance.CardDataSO;
+  
 
-        if (cardso != null)
+   
+
+
+      
+        if (e.card.cardInstance.isCardDataSOVaild()==true)
         {
             //CardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
 
-            e.card.DisplayCost(cardso.cardCost[0].cost, m_cardIcon);
-            CardNameText.text = cardso.cardName;
-            CardBottomAttackNumberText.text = cardso.attack.ToString();
-            CardBottomPowerNumberText.text = cardso.power.ToString();
+            e.card.DisplayCost(e.card.cardInstance.GetCardCost()[0].cost, m_cardIcon);
+            CardNameText.text = e.card.cardInstance.GetCardName();
+            CardBottomAttackNumberText.text = e.card.cardInstance.GetAttack().ToString();
+            CardBottomPowerNumberText.text = e.card.cardInstance.GetPower().ToString();
 
 
             CardEffectText.text = "";
-            illustration.sprite = cardso.illustration;
+            illustration.sprite = e.card.cardInstance.GetIllustration();
 
-            foreach (var effect in cardso.hitEffects)
+            foreach (var effect in e.card.cardInstance.GetHitEffects())
             {
                 if (effect.conditions.Length != 0)
                 {
@@ -92,11 +100,11 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
 
               
             }
-            if (cardso.type == CardDataSO.CardType.Block)
+            if (e.card.cardInstance.GetCardType() == CardDataSO.CardType.Block)
             {
-                CardEffectText.text += string.Format("{0}방어력", cardso.blockPower) + "\n";
+                CardEffectText.text += string.Format("{0}방어력", e.card.cardInstance.GetBlockPower()) + "\n";
             }
-            switch (cardso.type)
+            switch (e.card.cardInstance.GetCardType())
             {
                 case CardDataSO.CardType.Attack:
                     CardTypeText.text = "공격";

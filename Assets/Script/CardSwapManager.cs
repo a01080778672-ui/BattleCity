@@ -70,14 +70,14 @@ public class CardSwapManager : MonoBehaviour //카드를 덱, 무덤, 손패 에서 여기 �
     void e_DrawCardEvent(EventBus.RequestDrawCards e)
     {
         Debug.Log("추가드로우");
-        if(e.who.type is EntityInstance.EntityType.player)
+        if(e.who.type is IModifierOwner.UserType.player)
         {
 
             PlayerDrawCards(_data.player.HandCards.Count+e.number);
 
 
         }
-        else if (e.who.type is EntityInstance.EntityType.enemy)
+        else if (e.who.type is IModifierOwner.UserType.enemy)
         {
            EnemyDrawCards(_data.enemy.HandCards.Count+e.number);
         }

@@ -156,30 +156,30 @@ public class DakgongAlgorithm
 
     public int GetCardCost(CardInstance card)
     {
-        if (card == null || card.CardDataSO == null || card.CardDataSO.cardCost == null || card.CardDataSO.cardCost.Length == 0)
+        if (card == null || card.isCardDataSOVaild()==false ||  card.GetCardCost().Length == 0)
         {
             return 0;
         }
 
-        return Math.Max(0, card.CardDataSO.cardCost[0].cost);
+        return Math.Max(0, card.GetCardCost()[0].cost);
     }
 
     public int GetAttackDamage(CardInstance card)
     {
-        return card != null && card.CardDataSO != null ? card.CardDataSO.attack : 0;
+        return card != null && card.isCardDataSOVaild() == true ? card.GetAttack() : 0;
     }
 
     public int GetAttackPower(CardInstance card)
     {
-        return card != null && card.CardDataSO != null ? card.CardDataSO.power : 0;
+        return card != null && card.isCardDataSOVaild() == true ? card.GetAttack() : 0;
     }
 
     public int GetBlockPower(CardInstance card)
     {
-        if (card == null || card.CardDataSO == null) return 0;
+        if (card == null || card.isCardDataSOVaild() == false) return 0;
 
-        int blockPower = card.CardDataSO.blockPower;
-        if (blockPower <= 0 && card.CardDataSO.type != CardDataSO.CardType.Block)
+        int blockPower = card.GetBlockPower();
+        if (blockPower <= 0 && card.GetCardType() != CardDataSO.CardType.Block)
         {
             return 1;
         }
@@ -215,7 +215,7 @@ public class DakgongAlgorithm
     private IEnumerable<CardInstance> SortByPriority(IEnumerable<CardInstance> cards, string[] priority)
     {
         return cards
-            .Where(card => card != null && card.CardDataSO != null)
+            .Where(card => card != null && card.isCardDataSOVaild() == true)
             .OrderBy(card => GetPriorityIndex(card, priority))
             .ThenByDescending(GetAttackDamage)
             .ThenByDescending(GetAttackPower)
@@ -227,7 +227,7 @@ public class DakgongAlgorithm
     private IEnumerable<CardInstance> SortForPitch(IEnumerable<CardInstance> cards)
     {
         return cards
-            .Where(card => card != null && card.CardDataSO != null)
+            .Where(card => card != null && card.isCardDataSOVaild() == true)
             .OrderBy(card => GetPriorityIndex(card, PitchPriority))
             .ThenBy(GetAttackDamage)
             .ThenBy(GetAttackPower)
@@ -252,7 +252,7 @@ public class DakgongAlgorithm
 
     private bool IsAttackCard(CardInstance card)
     {
-        return card != null && card.CardDataSO != null && card.CardDataSO.type == CardDataSO.CardType.Attack;
+        return card != null && card.isCardDataSOVaild() == true && card.GetCardType() == CardDataSO.CardType.Attack;
     }
 
     private bool HasCardName(CardInstance card, string expectedName)
@@ -262,8 +262,8 @@ public class DakgongAlgorithm
 
     private string GetCardName(CardInstance card)
     {
-        return card != null && card.CardDataSO != null && card.CardDataSO.cardName != null
-            ? card.CardDataSO.cardName.Trim()
+        return card != null && card.isCardDataSOVaild() == true
+            ? card.GetCardName().Trim()
             : string.Empty;
     }
 }
