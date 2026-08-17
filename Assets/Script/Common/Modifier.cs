@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class Modifier //기본 능력치에 버프를 걸어주기 위해 추가한 느낌이다.
 {
-    public Modifier(StatType type,int value, ModifierTrigger trigger,int stack)
+    public Modifier(StatType type,int value, ModifierTrigger trigger,int stack,ModifierTrigger deadTrigger = ModifierTrigger.None)
     {
         this.stat=type;
         this.value=value;
         this.trigger=trigger;
         this.stack=stack;
+        this.deadTrigger=deadTrigger;
     }
-
+   
 
 
 
@@ -23,6 +24,8 @@ public class Modifier //기본 능력치에 버프를 걸어주기 위해 추가한 느낌이다.
 
 
     public ModifierTrigger trigger;//언제 남은 횟수가 소모,삭제 되는가
+
+    public ModifierTrigger deadTrigger;//이 트리거가 발동되면 즉시 삭제 하기.
 
     public int stack; // 남은 횟수
 
@@ -36,6 +39,7 @@ public class Modifier //기본 능력치에 버프를 걸어주기 위해 추가한 느낌이다.
     }
     public enum ModifierTrigger
     {
+        None,
         TurnStart,
         TurnEnd,
         TryUseCard,

@@ -63,14 +63,14 @@ public class EnemyAI : MonoBehaviour
         CardInstance incomingAttackCard = _data != null ? _data.currAttackCard : null;
         yield return new WaitForSeconds(tryBlockDelay);
 
-        if (incomingAttackCard == null)
+        if (incomingAttackCard == null)//방어할 카드가 없어서 그냥 넘김
         {
             EventBus.Publish(new EventBus.StartPlayerMainPhaseEvent { });
             TryBlockCor = null;
             yield break;
         }
 
-        if (!dakgongAlgorithm.ShouldDefend(_data.enemy, incomingAttackCard))
+        if (!dakgongAlgorithm.ShouldDefend(_data.enemy, incomingAttackCard))//방어 포기
         {
             EventBus.Publish(new EventBus.AlarmText { alarmText = "Enemy takes the attack." });
             EventBus.Publish(new EventBus.PlayerAttackSuccess {player=_data.player,enemy=_data.enemy });
@@ -91,6 +91,16 @@ public class EnemyAI : MonoBehaviour
 
         foreach (CardInstance blockCard in blockCards)
         {
+            GameLoopData.BattleLog bufferLog=new GameLoopData.BattleLog();
+            bufferLog.actor=_data.enemy;
+            bufferLog.target=_data.player;
+            bufferLog.card=blockCard;
+            bufferLog.cardId=blockCard.GetCardId();
+            bufferLog.type=GameLoopData.LogType.TryBlock;
+            EventBus.Publish<EventBus.RequestAddLog>(new EventBus.RequestAddLog {newBattleLog=bufferLog });//방어시도 쓴카드 로그 추가 요청
+
+
+
             UseDefenseCardEffect(blockCard);
             EventBus.Publish(new EventBus.RequestRelocateCard
             {
@@ -145,11 +155,20 @@ public class EnemyAI : MonoBehaviour
         }
 
         _data.enemy.currEnergy -= cost;
+
+        GameLoopData.BattleLog bufferLog = new GameLoopData.BattleLog();
+        bufferLog.actor = _data.enemy;
+        bufferLog.target = _data.player;
+        bufferLog.card = attackCard;
+        bufferLog.cardId = attackCard.GetCardId();
+        bufferLog.type = GameLoopData.LogType.TryAttack;
+        EventBus.Publish<EventBus.RequestAddLog>(new EventBus.RequestAddLog { newBattleLog = bufferLog });//공격시도 로그 추가
+
         EventBus.Publish(new EventBus.RequestRelocateCard
         {
             card = attackCard,
             to = CommonClass.ZoneType.EnemyAttackZone
-        });
+        });//적의 공격을 위해 카드를 옮긴듯.
 
         EventBus.Publish(new EventBus.AlarmText
         {
@@ -166,6 +185,16 @@ public class EnemyAI : MonoBehaviour
         List<CardInstance> defenseCards = dakgongAlgorithm.ChooseDefenseSetCards(_data.enemy, maxEnemyCapacityBlockCardNumber);
         foreach (CardInstance card in defenseCards)
         {
+            GameLoopData.BattleLog bufferLog = new GameLoopData.BattleLog();
+            bufferLog.actor = _data.enemy;
+            bufferLog.card = card;
+            bufferLog.cardId = card.GetCardId();
+            bufferLog.type = GameLoopData.LogType.SetBlock;
+            EventBus.Publish<EventBus.RequestAddLog>(new EventBus.RequestAddLog { newBattleLog = bufferLog });//방어 배치 로그 추가
+
+
+
+
             EventBus.Publish(new EventBus.RequestRelocateCard
             {
                 card = card,
@@ -174,17 +203,26 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void PitchCardsForAttack(CardInstance attackCard)
+    void PitchCardsForAttack(CardInstance attackCard)//공격을 하기위해 피치한다. 
     {
         List<CardInstance> pitchCards = dakgongAlgorithm.ChoosePitchCards(_data.enemy, attackCard);
         foreach (CardInstance card in pitchCards)
         {
+            GameLoopData.BattleLog bufferLog = new GameLoopData.BattleLog();
+            bufferLog.actor = _data.enemy;
+            bufferLog.card = card;
+            bufferLog.cardId=card.GetCardId();
+            bufferLog.type = GameLoopData.LogType.peach;
+            EventBus.Publish<EventBus.RequestAddLog>(new EventBus.RequestAddLog { newBattleLog = bufferLog });//피치 로그 추가 요청
+
+
+
             EventBus.Publish(new EventBus.RequestRelocateCard
             {
                 card = card,
                 to = CommonClass.ZoneType.EnemyGraveZone
             });
-            _data.enemy.currEnergy += 1;
+            _data.enemy.currEnergy += 1;//피치해서 얻는게 늘어나면 여기를 바꿔야할듯.
         }
     }
 

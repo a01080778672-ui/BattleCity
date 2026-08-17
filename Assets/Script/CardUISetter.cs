@@ -3,17 +3,16 @@ using DG.Tweening; // DOTween ³×ÀÓ½ºÆäÀÌ½º¸¦ ¹Ýµå½Ã Ãß°¡
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 
 public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§ÇØ ÀÏÇÏ´Â Å¬·¡½º 
-    // µ¦ Ã¢°ú ¹«´ý Ã¢µµ ÀÏ´ÜÀº ¿©±â¼­ °ü¸®ÇÏ´Âµ¥ ºÐ¸®ÇÒ¼öµµ ÀÖ°í ¾Æ´Ò¼öµµ ÀÖ°í..
+ 
 {
-    [SerializeField] GameObject deckViewer;//µ¦ Ã¢
-
-    [SerializeField] GameObject graveViewer;//¹«´ý Ã¢
+   
 
 
     [SerializeField] private GameObject hand;//³»°¡ µé°íÀÖ´Â Ä«µå¸¦ ÀÌ°ÍÀÇ ÀÚ½ÄÀ¸·Î µî·ÏÇÒ°ÍÀÓ.
@@ -44,6 +43,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
 
     [SerializeField] private RectTransform graveContent;//¹«´ý Ã¢¿¡ µé¾î°¥ Ä«µåµéÀÇ ºÎ¸ð
     [SerializeField] private RectTransform deckContent;//µ¦ Ã¢¿¡ µé¾î°¥ Ä«µåµéÀÇ ºÎ¸ð
+    [SerializeField] private TextMeshProUGUI logText;//·Î±×ÅØ½ºÆ®
 
     [SerializeField] GameObject Card;//¼ÕÆÐ¿¡ ½ÇÁ¸ÇÏ´Â Ä«µå ³ÖÀ½(instantiate¸¦ À§ÇØ¼­)
     [SerializeField] GameObject viwerCard;//ÆÇ³Ú(¹«´ýÃ¢ÀÌ³ª µ¦Ã¢)Ã¢¿¡ ÀÖÀ» Ä«µå ÇÁ¸®Æé ³ÖÀ½(instantiate¸¦ À§ÇØ¼­)
@@ -82,6 +82,8 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
 
         EventBus.Subscribe<EventBus.UpdateGrave>(e_UpdateAllGraveViewer);
 
+        EventBus.Subscribe<EventBus.LogUpdate>(e_LogUpdate);
+
 
 
         EventBus.Subscribe<EventBus.RelocateCardUI>(e_RelocateUICard);
@@ -106,6 +108,8 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
         EventBus.Unsubscribe<EventBus.UpdateDeck>(e_UpdateAllDeckViewer);
 
         EventBus.Unsubscribe<EventBus.UpdateGrave>(e_UpdateAllGraveViewer);
+
+        EventBus.Unsubscribe<EventBus.LogUpdate>(e_LogUpdate);
 
 
 
@@ -501,16 +505,14 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
  
     
 
-
-    public void OpenGrave()//¹«´ý ¹öÆ°¿¡ ÁÙ ¿¹Á¤
+    void e_LogUpdate(EventBus.LogUpdate e)
     {
-        EventBus.Publish<EventBus.GraveOpenButtonClicked>(new EventBus.GraveOpenButtonClicked());
-        graveViewer.transform.localScale = Vector3.one;
+        if(logText != null)
+        {
+            logText.text = e.log;
+        }
     }
-    public void CloseGrave()//¹«´ý ´Ý±â ¹öÆ°¿¡ ÁÙ ¿¹Á¤
-    {
-        graveViewer.transform.localScale = Vector3.zero;
-    }
+   
     void e_UpdateAllGraveViewer(EventBus.UpdateGrave e)//¹«´ý Ã¢ ¾÷µ¥ÀÌÆ®. Á¤·ÄÀº ¾ÈÇÔ
     {
         GameObject makedCard;
@@ -538,15 +540,7 @@ public class CardUISetter : MonoBehaviour//ÇÃ·¹ÀÌ¾î¿¡°Ô Ä«µå ÀÌµ¿À» º¸¿©ÁÖ±â À§Ç
 
 
     }
-    public void OpenDeck()//µ¦ ¹öÆ°¿¡ ÁÙ ¿¹Á¤
-    {
-        EventBus.Publish<EventBus.DeckOpenButtonClicked>(new EventBus.DeckOpenButtonClicked());
-        deckViewer.transform.localScale = Vector3.one;
-    }
-    public void CloseDeck()//µ¦ ´Ý±â ¹öÆ°¿¡ ÁÙ ¿¹Á¤
-    {
-        deckViewer.transform.localScale = Vector3.zero;
-    }
+ 
 
     void e_UpdateAllDeckViewer(EventBus.UpdateDeck e)//µ¦ Ã¢ ¾÷µ¥ÀÌÆ®. Á¤·ÄÀº ¾ÈÇÔ
     {

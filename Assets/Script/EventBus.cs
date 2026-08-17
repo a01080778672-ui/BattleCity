@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GameLoopData;
 
 public static class EventBus 
 {
@@ -72,6 +73,8 @@ public static class EventBus
 
     public struct GraveOpenButtonClicked { }//무덤 버튼이 눌렸어요
     public struct DeckOpenButtonClicked { }//덱 버튼이 눌렸어요
+
+    public struct LogOpenButtonClicked { }//로그 보기 버튼이 눌렸어요
     public struct CheckSelectedCardLive { }//무슨 카드가 손패에서 나갔어요(현재 선택한 카드를 null처리 할까말까 결정하기 위해서 있음)
 
     public struct BlockButtonClicked { }//방어하기 버튼이 눌렸어요(적의 공격을 막기위해 방어를 하는데 그거 말한거)
@@ -85,6 +88,8 @@ public static class EventBus
 
     public struct EntityBuffChanged { public EntityInstance entity; }//카드의 버프 내역이 변경되었어요! (카드의UI숫자 갱신을 위해서)
 
+    public struct LogUpdatedComplete { public GameLoopData.BattleLog newBattleLog; }//로그가 업데이트 됐어요(카드의 패시브 버프 갱신을 위해)
+
     /////////////////////////////////////////////////////////// ///////////////////////////////////////////////////////////
 
 
@@ -96,6 +101,8 @@ public static class EventBus
     public struct AlarmText { public string alarmText; }//중앙에 크게 UI 특정한 알람을 보여줍니다.
     public struct UpdateGrave { public IReadOnlyList<CardInstance> cards; }//무덤 UI업데이트 하라 합니다
     public struct UpdateDeck { public IReadOnlyList<CardInstance> cards; }//덱 UI업데이트 하라고 합니다.
+
+    public struct LogUpdate { public string log; }//로그 업데이트 하라 합니다(나중엔 로그 List를 통으로 보낼듯함.)
     public struct RelocateCardUI {  public CardInstance card; public CommonClass.ZoneType from;public CommonClass.ZoneType to; }//실제 데이터는 안 바뀌고, UI에서 카드를 여기서 여기로 보내달라고 하는 이벤트
 
 
@@ -121,6 +128,8 @@ public static class EventBus
     public struct StartEnemyTryBlockPhaseEvent { }   // 플레이어의 방어 시도 시작 턴으로
     
     public struct RequestDrawCards {public EntityInstance who; public int number; }//카드를 드로우 해달라 요청하는 이벤트
+
+    public struct RequestAddLog { public GameLoopData.BattleLog newBattleLog; }  //전투로그를 추가해달라 요청하는 이벤트이다.
 
    
 

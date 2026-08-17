@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static CardDataSO;
+using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 public class CardInstance : IModifierOwner  //카드의 정보 카드의 오염 여부나 카드 인스턴스 id가 추가될 수 있음
 {
@@ -10,6 +11,10 @@ public class CardInstance : IModifierOwner  //카드의 정보 카드의 오염 여부나 카�
     private List<Modifier> _currBuff = new List<Modifier>();
 
     public IReadOnlyList<Modifier> currBuff => _currBuff;
+
+   
+  
+
 
     public void AddBuff(Modifier newBuff)
     {
@@ -129,12 +134,17 @@ public class CardInstance : IModifierOwner  //카드의 정보 카드의 오염 여부나 카�
         return CardDataSO.hitEffects;
     }
 
+    public List<EffectDefinition> GetLogUpdateEffects()
+    {
+        return CardDataSO.logUpdateEffect;
+    }
+
     public int GetCardId()
     {
         return CardDataSO.cardId;
     }
   
 
-
+   
 
 }

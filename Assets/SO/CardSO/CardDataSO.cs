@@ -39,12 +39,15 @@ public class CardDataSO : ScriptableObject
     }
 
     [System.Serializable]
-    public struct EffectDefinition
+    public struct EffectDefinition//(26.8.14)현재기준 사용(적중)했을때만 효과를 발동할수 있다. 이걸 해결할 방안을 찾고있다.
     {
         
         public EffectSO effects;
         public ConditionSO[] conditions;
     }
+
+
+   
 
 
     public int attack;//적중시 줄 기본 데미지
@@ -57,7 +60,9 @@ public class CardDataSO : ScriptableObject
     public Sprite illustration;//일러스트
     public ColorType colorType;
     public CardType type;//카드의 타입 설정. 이것을 기반해 이름이 정해진다.
-    public List<EffectDefinition> hitEffects;//적중 효과. 이제는 조건과 함께 묶여서 지낸다.
+    public List<EffectDefinition> hitEffects;//적중 성공할때마다 조건검사후 발동함
+
+    public List<EffectDefinition> logUpdateEffect;//로그가 업데이트 될때마다 조건검사후 발동함
 
 
     public int cardId;//내가 따로 추가함. 카드의 고유 아이디

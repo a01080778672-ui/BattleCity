@@ -11,7 +11,12 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
 {
     [SerializeField] Canvas canvas;
 
+    [SerializeField] GameObject deckViewer;//덱 창
 
+    [SerializeField] GameObject graveViewer;//무덤 창
+
+    [SerializeField] GameObject logViewer;//로그창
+    [SerializeField] TextMeshProUGUI logText;//로그 텍스트(임시)
 
 
     [SerializeField] TextMeshProUGUI[] alarmText;//여러개의 알람이 필요할때를 대비하여 배열로 받음
@@ -23,7 +28,7 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
     [SerializeField] float alarmFadeTime = 1.0f;
     [SerializeField] float alarmInitTime = 2.0f;
 
-
+    
 
     //호버시 보일 큰 카드
     private CardView currShowCard;
@@ -58,6 +63,7 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
 
     }
 
+  
     void e_CardMouseIn(EventBus.CardMouseIn e)//어떤 카드에 마우스가 들어오면
     {
         if (e.card == null||e.card.isFront==false) return;
@@ -249,9 +255,33 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
         });
     }
 
-
-
-  
+    public void OpenDeck()//덱 버튼에 줄 예정
+    {
+        EventBus.Publish<EventBus.DeckOpenButtonClicked>(new EventBus.DeckOpenButtonClicked());
+        deckViewer.transform.localScale = Vector3.one;
+    }
+    public void CloseDeck()//덱 닫기 버튼에 줄 예정
+    {
+        deckViewer.transform.localScale = Vector3.zero;
+    }
+    public void OpenGrave()//무덤 버튼에 줄 예정
+    {
+        EventBus.Publish<EventBus.GraveOpenButtonClicked>(new EventBus.GraveOpenButtonClicked());
+        graveViewer.transform.localScale = Vector3.one;
+    }
+    public void CloseGrave()//무덤 닫기 버튼에 줄 예정
+    {
+        graveViewer.transform.localScale = Vector3.zero;
+    }
+    public void OpenLog()//로그 버튼에 줄 예정
+    {
+        EventBus.Publish<EventBus.LogOpenButtonClicked>(new EventBus.LogOpenButtonClicked());
+        logViewer.transform.localScale = Vector3.one;
+    }
+    public void CloseLog()//로그 닫기 버튼에 줄 예정
+    {
+        logViewer.transform.localScale = Vector3.zero;
+    }
 
 
 

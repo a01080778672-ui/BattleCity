@@ -50,6 +50,16 @@ public class EntityInstance: IModifierOwner //캡슐화를 위해 코드의 길이를 많이 �
            get { return _currHp; }
         set { 
             
+
+
+            GameLoopData.BattleLog bufferLog=new GameLoopData.BattleLog();
+            bufferLog.actor = this;
+            bufferLog.type = GameLoopData.LogType.GetDamaged;
+            bufferLog.value = _currHp - value;
+            EventBus.Publish<EventBus.RequestAddLog>(new EventBus.RequestAddLog { newBattleLog = bufferLog });
+
+
+
         _currHp = value;
 
             if (value >= maxHp) _currHp = maxHp;

@@ -10,12 +10,14 @@ public class ViwerUpdateManager : MonoBehaviour //무덤창, 덱 창이 열리려 할때 현
     {
         EventBus.Subscribe<EventBus.DeckOpenButtonClicked>(e_DeckOpen);
         EventBus.Subscribe<EventBus.GraveOpenButtonClicked>(e_GraveOpen);
+        EventBus.Subscribe<EventBus.LogOpenButtonClicked>(e_LogOpen);
     }
 
     private void OnDisable()
     {
         EventBus.Unsubscribe<EventBus.DeckOpenButtonClicked>(e_DeckOpen);
         EventBus.Unsubscribe<EventBus.GraveOpenButtonClicked>(e_GraveOpen);
+        EventBus.Unsubscribe<EventBus.LogOpenButtonClicked>(e_LogOpen);
     }
     void e_DeckOpen(EventBus.DeckOpenButtonClicked e)
     {
@@ -24,5 +26,11 @@ public class ViwerUpdateManager : MonoBehaviour //무덤창, 덱 창이 열리려 할때 현
     void e_GraveOpen(EventBus.GraveOpenButtonClicked e)
     {
         EventBus.Publish<EventBus.UpdateGrave>(new EventBus.UpdateGrave { cards = _data.player.GraveCards });
+    }
+    void e_LogOpen(EventBus.LogOpenButtonClicked e)
+    {
+        EventBus.Publish<EventBus.LogUpdate>(new EventBus.LogUpdate { log=_data.GetLogString() });
+
+
     }
 }

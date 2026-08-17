@@ -101,7 +101,7 @@ public class FSMManager : MonoBehaviour   //이 매니저는 주입 당할것 같다.
     {
         if (newGameState == null||currGameState== newGameState) return;
 
-        Debug.Log("FSM상태 변이:" + newGameState);
+
      
         EventBus.Publish(new EventBus.FSMChanged { prev = currGameState, curr = newGameState });
 

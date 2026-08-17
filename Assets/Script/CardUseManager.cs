@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
+using static UnityEditor.Progress;
+using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 당담하는 매니저이다.
 {
@@ -78,14 +80,17 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
             _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
             _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));//8
         }
+        j++;
+        for (int i = 0; i < 2; i++)
+        {
+            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
+            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));//9
+        }
 
-        //임시로 추가.
+     
 
-        Modifier bufferMod = new Modifier(Modifier.StatType.Power, 12, Modifier.ModifierTrigger.TurnStart, 1);
-
-
-      
-        _data.player.AddBuff(bufferMod);
+        //Modifier bufferMod = new Modifier(Modifier.StatType.Power, 12, Modifier.ModifierTrigger.TurnStart, 1);
+        // _data.player.AddBuff(bufferMod);
 
     }
 
@@ -102,6 +107,8 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
         EventBus.Subscribe<EventBus.BlockButtonClicked>(e_TryPlayerUseBlockCard); // 임시 추가 0609김종호
 
         EventBus.Subscribe<EventBus.FSMChanged>(e_FSMchanged);
+
+   
     }
 
     private void OnDisable()
@@ -117,6 +124,8 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
         EventBus.Unsubscribe<EventBus.BlockButtonClicked>(e_TryPlayerUseBlockCard); // 임시 추가 0609김종호
 
         EventBus.Unsubscribe<EventBus.FSMChanged>(e_FSMchanged);
+
+     
     }
 
     private void Update() // 임시로 추가함 0609김종호
@@ -129,6 +138,9 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
             }
         }
     }
+
+
+   
 
     void e_FSMchanged(EventBus.FSMChanged e)
     {
@@ -202,10 +214,28 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
                     if (item.GetCardType() != CardDataSO.CardType.Block)
                     {
                         if (fsmManager.GetCurrState() is PlayerMainPhaseState)
-                            TryPlayerUseAttackCard(e.card.cardInstance);//카드를 쓰려고 하겠다 공격으로
+                        {
+                          
 
-                        if (fsmManager.GetCurrState() is PlayerSettingBlockPhaseState&& _data.player.BlockCards.Count < MaxPlayerCapacityBlockCardNumber)//방어 세팅 페이즈에선 공격카드역시 방어존으로 갑니다
+
+                          
+
+                              TryPlayerUseAttackCard(e.card.cardInstance);//카드를 쓰려고 하겠다 공격으로
+                        }
+
+                        if (fsmManager.GetCurrState() is PlayerSettingBlockPhaseState && _data.player.BlockCards.Count < MaxPlayerCapacityBlockCardNumber)//방어 세팅 페이즈에선 공격카드역시 방어존으로 갑니다
+                        {
+                            GameLoopData.BattleLog bufferBattleLog= new GameLoopData.BattleLog();
+                            bufferBattleLog.type = GameLoopData.LogType.SetBlock;
+                            bufferBattleLog.card = item;
+                            bufferBattleLog.cardId = item.GetCardId();
+                            bufferBattleLog.actor = _data.player;
+                            bufferBattleLog.target = null;
+                            //현재 턴수는 GameLoopData에서 이미 알고있어서 괜찮다.
+                            EventBus.Publish(new EventBus.RequestAddLog { newBattleLog= bufferBattleLog });//로그 추가하라고 이벤트 터트림.
+
                             EventBus.Publish(new EventBus.RequestRelocateCard { card = item, to = CommonClass.ZoneType.PlayerBlockZone });//카드 스왑 매니저에 있는 카드 이동 시키기 이벤트 터트리기
+                        }
 
 
                         return;
@@ -213,9 +243,19 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
                     else if (_data.player.BlockCards.Count < MaxPlayerCapacityBlockCardNumber)
                     {
                         if (fsmManager.GetCurrState() is PlayerMainPhaseState || fsmManager.GetCurrState() is PlayerSettingBlockPhaseState)
+                        {
+                          
+
+                            GameLoopData.BattleLog bufferBattleLog = new GameLoopData.BattleLog();
+                            bufferBattleLog.type = GameLoopData.LogType.SetBlock;
+                            bufferBattleLog.card = item;
+                            bufferBattleLog.cardId = item.GetCardId();
+                            bufferBattleLog.actor = _data.player;
+                            bufferBattleLog.target = null;
+                            //현재 턴수는 GameLoopData에서 이미 알고있어서 괜찮다.
+                            EventBus.Publish(new EventBus.RequestAddLog { newBattleLog = bufferBattleLog });//로그 추가하라고 이벤트 터트림.
                             EventBus.Publish(new EventBus.RequestRelocateCard { card = item, to = CommonClass.ZoneType.PlayerBlockZone });//카드 스왑 매니저에 있는 카드 이동 시키기 이벤트 터트리기
-
-
+                        }
 
 
 
@@ -248,7 +288,24 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
                 // 우클릭 = 카드 버리고 에너지 +1
 
 
+                GameLoopData.BattleLog bufferBattleLog = new GameLoopData.BattleLog();
+                bufferBattleLog.type = GameLoopData.LogType.peach;
+                bufferBattleLog.card = item;
+                bufferBattleLog.cardId = item.GetCardId();
+                bufferBattleLog.actor = _data.player;
+                bufferBattleLog.target = null;
+                //현재 턴수는 GameLoopData에서 이미 알고있어서 괜찮다.
+                EventBus.Publish(new EventBus.RequestAddLog { newBattleLog = bufferBattleLog });//로그 추가하라고 이벤트 터트림.
+
+
+
+
                 EventBus.Publish(new EventBus.RequestRelocateCard { card = e.card.cardInstance, to = CommonClass.ZoneType.PlayerGraveZone });//카드 스왑 매니저에 있는 카드 이동 시키기 이벤트 터트리기
+
+
+             
+
+
                 return;
             }
         }
@@ -334,26 +391,53 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
         }
 
 
+      
+
+
+        foreach (var cardInstance in currSelectedBlockCards) // 임시추가 0609김종호
+        {
+            GameLoopData.BattleLog bufferBattleLog = new GameLoopData.BattleLog();
+            bufferBattleLog.type = GameLoopData.LogType.TryBlock;
+            bufferBattleLog.card = cardInstance;
+            bufferBattleLog.cardId = cardInstance.GetCardId();
+            bufferBattleLog.actor = _data.player;
+            bufferBattleLog.target = null;
+            //현재 턴수는 GameLoopData에서 이미 알고있어서 괜찮다.
+            EventBus.Publish(new EventBus.RequestAddLog { newBattleLog = bufferBattleLog });//로그 추가하라고 이벤트 터트림.
+
+
+            EventBus.Publish(new EventBus.RequestRelocateCard { card = cardInstance, to = CommonClass.ZoneType.PlayerGraveZone });//방어 선택 카드들을 싹 플레이어 무덤으로 
+        }
+        currSelectedBlockCards.Clear();//방어 선택 카드들을 다시 싹다 비웁니다
 
         if (_data.currAttackCard.GetPower() <= blockScore)
         {
             //방어 성공
             EventBus.Publish(new EventBus.AlarmText { alarmText = $"방어 성공" }); //임시 추가 0609김종호
+
+
+            GameLoopData.BattleLog bufferBattleLog = new GameLoopData.BattleLog();
+            bufferBattleLog.type = GameLoopData.LogType.AttackFail;
+            bufferBattleLog.card = _data.currAttackCard;
+            bufferBattleLog.cardId = _data.currAttackCard.GetCardId();
+            bufferBattleLog.actor = _data.enemy;
+            bufferBattleLog.target = _data.player;
+            //현재 턴수는 GameLoopData에서 이미 알고있어서 괜찮다.
+            EventBus.Publish(new EventBus.RequestAddLog { newBattleLog = bufferBattleLog });//로그 추가하라고 이벤트 터트림.
+
         }
         else
         {
             //방어 실패
             EventBus.Publish(new EventBus.AlarmText { alarmText = $"방어 실패" }); // 임시 추가 0609김종호
-   
+
+          
+
             EventBus.Publish(new EventBus.EnemyAttackSuccess { player = _data.player, enemy = _data.enemy });
-            //EventBus.Publish(new EventBus.RequestPlayerDamage { damage = _data.currAttackCard.CardDataSO.power });
+
         }
 
-        foreach(var cardInstance in currSelectedBlockCards) // 임시추가 0609김종호
-        {
-            EventBus.Publish(new EventBus.RequestRelocateCard { card = cardInstance, to = CommonClass.ZoneType.PlayerGraveZone });//방어 선택 카드들을 싹 플레이어 무덤으로 
-        }
-        currSelectedBlockCards.Clear();//방어 선택 카드들을 다시 싹다 비웁니다
+
         EventBus.Publish(new EventBus.RequestRelocateCard { card = _data.currAttackCard, to = CommonClass.ZoneType.EnemyGraveZone });//공격 존의 카드도 적 무덤존으로.
 
 
@@ -402,8 +486,15 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
 
         //여기 밑으로 가면 에너지는 충분
 
-      
 
+        GameLoopData.BattleLog bufferBattleLog = new GameLoopData.BattleLog();
+        bufferBattleLog.type = GameLoopData.LogType.TryAttack;
+        bufferBattleLog.card = card;
+        bufferBattleLog.cardId = card.GetCardId();
+        bufferBattleLog.actor = _data.player;
+        bufferBattleLog.target = _data.enemy;
+        //현재 턴수는 GameLoopData에서 이미 알고있어서 괜찮다.
+        EventBus.Publish(new EventBus.RequestAddLog { newBattleLog = bufferBattleLog });//로그 추가하라고 이벤트 터트림.
 
         EventBus.Publish(new EventBus.RequestRelocateCard { card = card, to = CommonClass.ZoneType.PlayerAttackZone });
         //카드 스왑 매니저에 있는 카드 이동 시키기 이벤트 터트리기
@@ -420,6 +511,20 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
     void UseCard(CardContext useontext)
     {
         CardContext context = useontext;
+
+
+        GameLoopData.BattleLog bufferBattleLog = new GameLoopData.BattleLog();
+        bufferBattleLog.type = GameLoopData.LogType.AttackSuccess;
+        bufferBattleLog.card = _data.currAttackCard;
+        bufferBattleLog.cardId = _data.currAttackCard.GetCardId();
+        bufferBattleLog.actor = useontext.usedEntity;
+        bufferBattleLog.target = useontext.targetEntity;
+        //현재 턴수는 GameLoopData에서 이미 알고있어서 괜찮다.
+        EventBus.Publish(new EventBus.RequestAddLog { newBattleLog = bufferBattleLog });//로그 추가하라고 이벤트 터트림.
+
+
+
+
 
         int finalAttackPower= context.usedCard.GetAttack();
 
@@ -457,11 +562,6 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
             }
 
         }
-
-
-
-     
-
     }
 
 
