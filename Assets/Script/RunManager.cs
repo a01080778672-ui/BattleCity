@@ -21,6 +21,9 @@ public class RunManager : MonoBehaviour
     [Header("Player Deck")]
     [SerializeField] private List<CardInstance> playerDeck = new List<CardInstance>();
 
+    [Header("Player Inventory")]
+    [SerializeField] private List<CardInstance> playerInventory = new List<CardInstance>();
+
     [Header("Game Option")]
     [SerializeField, Range(0f, 1f)] private float volumeBGM = 1f;
     [SerializeField, Range(0f, 1f)] private float volumeSFX = 1f;
@@ -36,6 +39,7 @@ public class RunManager : MonoBehaviour
     public float VolumeSFX => volumeSFX;
 
     public IReadOnlyCollection<CardInstance> PlayerDeck => playerDeck;
+    public IReadOnlyCollection<CardInstance> PlayerInventory => playerInventory;
 
     private void Awake()
     {
@@ -63,16 +67,26 @@ public class RunManager : MonoBehaviour
 
     // 덱에 카드 추가
     // 추후에 매개변수를 카드 ID로 받도록 수정 필요
-    public void AddCard(CardInstance newCard)
+    public void AddCardAtDeck(CardInstance card)
     {
-        playerDeck.Add(newCard);
+        playerDeck.Add(card);
     }
 
     // 덱에서 카드 제거
     // 추후에 매개변수를 카드 ID로 받도록 수정 필요
-    public void RemoveCard(CardInstance removeCard)
+    public void RemoveCardAtDeck(CardInstance card)
     {
-        playerDeck.Remove(removeCard);
+        playerDeck.Remove(card);
+    }
+
+    public void AddCardAtInventory(CardInstance card)
+    {
+        playerInventory.Add(card);
+    }
+
+    public void RemoveCardAtInventory(CardInstance card)
+    {
+        playerInventory.Remove(card);
     }
 
     public void SetBGMVolume(float volume)
