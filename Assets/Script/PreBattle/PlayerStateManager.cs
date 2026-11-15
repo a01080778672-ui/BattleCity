@@ -1,69 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
 public class PlayerStateManager : MonoBehaviour
 {
-    private int winCount = 0;
-    private int dayCount = 1;
-    private int playerLP = 20;
+    [Header("Player Status UI")]
+    [SerializeField] private TextMeshProUGUI winCountText;
+    [SerializeField] private TextMeshProUGUI weekText;
+    [SerializeField] private TextMeshProUGUI playerLPText;
 
-    public TextMeshProUGUI winCountText;
-    public TextMeshProUGUI dayCountText;
-    public TextMeshProUGUI playerLPText;
-
-    private void Start()
-    {
-        if (winCount < 0)
-            winCount = 0;
-        if (dayCount < 0)
-            dayCount = 0;
-        if (playerLP < 0)
-            playerLP = 0;
-    }
-
+    // Áö±Ý ÇÃ·¹ÀÌ¾î ½ºÅÈÀ» ¸Å ÇÁ·¹ÀÓ¸¶´Ù ¾÷µ¥ÀÌÆ®ÇÏµµ·Ï µÇ¾îÀÖ´Âµ¥ ÃßÈÄ¿¡ ¼öÁ¤ ÇÊ¿ä
     private void Update()
-    { 
-        winCountText.text = $"X {winCount}";
-        dayCountText.text = $"Day {dayCount}";
-        playerLPText.text = $"LP: {playerLP} / 20";
-    }
-
-
-    // ë””ë²„ê·¸ ìš© í•¨ìˆ˜
-    public void WinCountAdd()
     {
-        winCount++;
-    }
+        RunManager run = RunManager.Instance;
 
-    public void WinCountSub()
-    {
-        if (winCount > 0)
-            winCount--;
-    }
+        if (run == null)
+            return;
 
-    public void DayCountAdd()
-    {
-        dayCount++;
-    }
-
-    public void DayCountSub()
-    {
-        if (dayCount > 1)
-            dayCount--;
-    }
-
-
-    public void PlayerLPAdd()
-    {
-        if (playerLP < 20)
-            playerLP++;
-    }
-
-    public void PlayerLPSub()
-    {
-        if (playerLP > 0)
-            playerLP--;
+        winCountText.text = $"X {run.PlayerWin}";
+        weekText.text = $"Week {run.Week}";
+        playerLPText.text = $"LP: {run.CurrentLP} / {run.MaxLP}";
     }
 }
