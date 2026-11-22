@@ -6,12 +6,11 @@ using UnityEngine;
 public class HealEnergy : EffectSO  //에너지회복
 {
 
-    public int healPower;
+   
 
-
-    public override void Execute(CardContext card)
+    public override void Execute(CardContext card, int effectPower)
     {
-        card.usedEntity.currEnergy += healPower;
+        card.usedEntity.currEnergy += effectPower;
 
 
 
@@ -20,9 +19,9 @@ public class HealEnergy : EffectSO  //에너지회복
     }
 
 
-    public override string GetCardScript(CardContext ctx)
+    public override string GetCardScript(int effectPower,CardContext ctx)
     {
-        return string.Format("{0} 에너지추가", healPower);
+        return string.Format("{0} 에너지추가", effectPower);
     }
 
 }

@@ -6,12 +6,10 @@ using UnityEngine;
 public class HealEffectSO : EffectSO  //방어 효과를 발동한다. 다만 지금은 회복으로 구현되었으므로 수정이 필요할것이다.
 {
 
-    public int healPower;
 
-
-    public override void Execute(CardContext card)
+    public override void Execute(CardContext card,int effectPower)
     {
-        card.usedEntity.currHp += healPower;
+        card.usedEntity.currHp += effectPower;
 
 
      
@@ -20,9 +18,9 @@ public class HealEffectSO : EffectSO  //방어 효과를 발동한다. 다만 지금은 회복으
     }
 
 
-    public override string GetCardScript(CardContext ctx)
+    public override string GetCardScript( int effectPower, CardContext ctx)
     {
-        return string.Format("{0} 힐파워", healPower);
+        return string.Format("{0} 힐파워", effectPower);
     }
 
 }

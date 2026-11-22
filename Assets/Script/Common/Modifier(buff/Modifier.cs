@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Modifier //기본 능력치에 버프를 걸어주기 위해 추가한 느낌이다.
 {
-    public Modifier(StatType type,int value, List<ConditionSO> consumptionTrigger, int stack,int iconID,string buffScript, List<ConditionSO> deadTrigger=null,List<ConditionSO> playTrigger=null,List<EffectSO>buffEffects=null)
+    public Modifier(StatType type,int value, List<ConditionSO> consumptionTrigger, int stack,int iconID,string buffScript, List<ConditionSO> deadTrigger=null,List<ConditionSO> playTrigger=null,List<GetModifier.BuffEffects> buffEffects=null)
     {
         this.stat=type;
         this.value=value;
@@ -39,7 +39,7 @@ public class Modifier //기본 능력치에 버프를 걸어주기 위해 추가한 느낌이다.
 
     public List<ConditionSO> deadTrigger = new List<ConditionSO>();//이 트리거가 발동되면 즉시 삭제 하기. 조건들중 하나라도 맞으면 발동되도록 일단 하였음
 
-    public List<EffectSO>buffEffect=new List<EffectSO>();//특수효과들 발동하면, 전부다 발동됨
+    public List<GetModifier.BuffEffects>buffEffect=new List<GetModifier.BuffEffects>();//특수효과들 발동하면, 전부다 발동됨
 
     public int stack; // 남은 횟수
 
