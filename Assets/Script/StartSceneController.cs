@@ -5,6 +5,7 @@ public class StartSceneController : MonoBehaviour
 {
     [SerializeField] private string gameSceneName = "GameScene";
     [SerializeField] private string mainMenuSceneName = "StartScene";       // 메인 메뉴 씬
+    [SerializeField] private string preBattleScene = "PreBattleScene";
 
     public void LoadGameScene()
     {
@@ -14,5 +15,10 @@ public class StartSceneController : MonoBehaviour
     public void LoadMainMenuScene()
     {
         SceneManager.LoadScene(mainMenuSceneName);
+    }
+
+    public void LoadPreBattleScene()
+    {
+        SceneManager.LoadScene(preBattleScene);
     }
 }
