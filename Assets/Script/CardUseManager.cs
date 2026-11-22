@@ -24,74 +24,140 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
 
     private void Start()
     {
-        int j = 1;
-        for (int i = 0; i < 4; i++)
+        if (RunManager.Instance == null)
         {
-            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem,IModifierOwner.UserType.player,_data.player));
-            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
-        }
-        j++;
-        for (int i = 0; i < 2; i++)
-        {
-            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
-            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
-        }
-        j++;
-        for (int i = 0; i < 2; i++)
-        {
-            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
-            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
-        }
-        j++;
-        for (int i = 0; i < 2; i++)
-        {
-            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
-            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
-        }
-        j++;
-        for (int i = 0; i < 2; i++)
-        {
-            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
-            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
-        }
-        j++;
-        for (int i = 0; i < 1; i++)
-        {
-            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
-            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
-        }
-        j++;
-        for (int i = 0; i < 1; i++)
-        {
-            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
-            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
-        }
-        j++;
+            int j = 1;
+            for (int i = 0; i < 4; i++)
+            {
+                _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
+                _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+            }
+            j++;
+            for (int i = 0; i < 2; i++)
+            {
+                _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
+                _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+            }
+            j++;
+            for (int i = 0; i < 2; i++)
+            {
+                _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
+                _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+            }
+            j++;
+            for (int i = 0; i < 2; i++)
+            {
+                _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
+                _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+            }
+            j++;
+            for (int i = 0; i < 2; i++)
+            {
+                _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
+                _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+            }
+            j++;
+            for (int i = 0; i < 1; i++)
+            {
+                _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
+                _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+            }
+            j++;
+            for (int i = 0; i < 1; i++)
+            {
+                _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
+                _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+            }
+            j++;
 
-        for (int i = 0; i < 4; i++)
-        {
-            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
-            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+            for (int i = 0; i < 4; i++)
+            {
+                _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
+                _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+            }
+            j++;
+
+            for (int i = 0; i < 2; i++)
+            {
+                _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
+                _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));//8
+            }
+            j++;
+            for (int i = 0; i < 12; i++)
+            {
+                _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
+                _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));//9
+            }
+
+
+
+            //Modifier bufferMod = new Modifier(Modifier.StatType.Power, 12, Modifier.ModifierTrigger.TurnStart, 1);
+            // _data.player.AddBuff(bufferMod);
         }
-        j++;
-
-        for (int i = 0; i < 2; i++)
+        else if(RunManager.Instance!=null)
         {
-            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
-            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));//8
+            {
+                int j = 1;
+                for (int i = 0; i < 4; i++)
+                {
+                    _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+                }
+                j++;
+                for (int i = 0; i < 2; i++)
+                {
+                    _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+                }
+                j++;
+                for (int i = 0; i < 2; i++)
+                {
+                    _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+                }
+                j++;
+                for (int i = 0; i < 2; i++)
+                {
+                    _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+                }
+                j++;
+                for (int i = 0; i < 2; i++)
+                {
+                    _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+                }
+                j++;
+                for (int i = 0; i < 1; i++)
+                {
+                    _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+                }
+                j++;
+                for (int i = 0; i < 1; i++)
+                {
+                    _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+                }
+                j++;
+
+                for (int i = 0; i < 4; i++)
+                {
+                    _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));
+                }
+                j++;
+
+                for (int i = 0; i < 2; i++)
+                {
+                    _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));//8
+                }
+                j++;
+                for (int i = 0; i < 12; i++)
+                {
+                    _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));//9
+                }
+            }
+
+
+            foreach (CardInstance item in RunManager.Instance.PlayerDeck)
+            {
+                _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(item.GetCardId()), modifierSystem, IModifierOwner.UserType.player, _data.player));
+            }
+
         }
-        j++;
-        for (int i = 0; i < 12; i++)
-        {
-            _data.AddPlayerDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.player, _data.player));
-            _data.AddEnemyDeckCard(new CardInstance(cardDB.GetCardSO(j), modifierSystem, IModifierOwner.UserType.enemy, _data.enemy));//9
-        }
-
-     
-
-        //Modifier bufferMod = new Modifier(Modifier.StatType.Power, 12, Modifier.ModifierTrigger.TurnStart, 1);
-        // _data.player.AddBuff(bufferMod);
-
     }
 
     private void OnEnable()
