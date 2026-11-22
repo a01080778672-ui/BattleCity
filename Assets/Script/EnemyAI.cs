@@ -253,7 +253,7 @@ public class EnemyAI : MonoBehaviour
 
             if (canUseEffect && effectData.effects != null)
             {
-                effectData.effects.Execute(context);
+                effectData.effects.Execute(context,effectData.effectPower);
             }
         }
     }

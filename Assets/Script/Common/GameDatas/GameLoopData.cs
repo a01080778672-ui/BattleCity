@@ -213,9 +213,10 @@ public class GameLoopData : MonoBehaviour
         BattleLog bufferBattleLog=new BattleLog();
         bufferBattleLog = e.newBattleLog;
         bufferBattleLog.turn = currTurn;
+       
         battleLogs.Add(bufferBattleLog);
-        EventBus.Publish<EventBus.LogUpdatedComplete>(new EventBus.LogUpdatedComplete { newBattleLog =e.newBattleLog });
-      
+        EventBus.Publish(new EventBus.LogUpdatedComplete { newBattleLog = e.newBattleLog });
+
     }
 
 

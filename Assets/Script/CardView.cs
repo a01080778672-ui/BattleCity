@@ -325,7 +325,7 @@ public class CardView : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,I
                     }
              
                 }
-                cardEffectText.text += effect.effects.GetCardScript() + "\n";//적중효과를 적음
+                cardEffectText.text += effect.effects.GetCardScript(effect.effectPower) + "\n";//적중효과를 적음
                
             }
 

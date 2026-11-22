@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IModifierOwner
+public interface IModifierOwner //버프나 디버프를 가질수 있는 객체
 {
     public enum UserType
     {

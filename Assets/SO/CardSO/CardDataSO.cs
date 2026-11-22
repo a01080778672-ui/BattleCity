@@ -39,10 +39,11 @@ public class CardDataSO : ScriptableObject
     }
 
     [System.Serializable]
-    public struct EffectDefinition//(26.8.14)현재기준 사용(적중)했을때만 효과를 발동할수 있다. 이걸 해결할 방안을 찾고있다.
+    public struct EffectDefinition
     {
         
         public EffectSO effects;
+        public int effectPower;
         public ConditionSO[] conditions;
     }
 

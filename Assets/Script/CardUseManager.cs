@@ -552,7 +552,7 @@ public class CardUseManager : MonoBehaviour //카드의 사용 또는 피치를 
             if (pass)
             {
 
-                effect.effects.Execute(context);//조건이 맞다면 그  효과를  수행합니다.
+                effect.effects.Execute(context,effect.effectPower);//조건이 맞다면 그  효과를  수행합니다.
             }
 
         }

@@ -99,9 +99,9 @@ public class ModifierSystem : MonoBehaviour
                         {
                             if (currTrigger.Evaluate(newContext))
                             {
-                                foreach (var effect in modifier.buffEffect)
+                                foreach (GetModifier.BuffEffects effect in modifier.buffEffect)
                                 {
-                                    effect.Execute(newContext);
+                                    effect.buffeffect.Execute(newContext,effect.buffPower);
                                 }
 
                                 continue;
@@ -155,7 +155,7 @@ public class ModifierSystem : MonoBehaviour
                             {
                                 foreach (var effect in modifier.buffEffect)
                                 {
-                                    effect.Execute(newContext);
+                                    effect.buffeffect.Execute(newContext,effect.buffPower);
                                 }
 
                                 continue;
@@ -188,7 +188,7 @@ public class ModifierSystem : MonoBehaviour
                     if (pass)
                     {
 
-                        effect.effects.Execute(context);//조건이 맞다면 그  효과를  수행합니다.
+                        effect.effects.Execute(context,effect.effectPower);//조건이 맞다면 그  효과를  수행합니다.
                     }
 
                 }

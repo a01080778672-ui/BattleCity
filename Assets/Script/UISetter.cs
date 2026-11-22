@@ -28,21 +28,9 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
     [SerializeField] float alarmFadeTime = 1.0f;
     [SerializeField] float alarmInitTime = 2.0f;
 
-    
+    [SerializeField]BigHoverUICard HoverUICard;
 
-    //호버시 보일 큰 카드
-    private CardView currShowCard;
-
-    [SerializeField] GameObject BigHoverUiCard;
-    [SerializeField] TextMeshProUGUI CardNameText;
-    [SerializeField] TextMeshProUGUI CardTypeText;
-    [SerializeField] TextMeshProUGUI CardCostText;
-    [SerializeField] TextMeshProUGUI CardEffectText;
-    [SerializeField] TextMeshProUGUI CardBottomAttackNumberText;
-    [SerializeField] TextMeshProUGUI CardBottomPowerNumberText;
-    [SerializeField] GameObject m_cardIcon;
-    [SerializeField] Image illustration;
-    //호버시 보일 큰 카드
+ 
 
 
 
@@ -67,76 +55,11 @@ public class UISetter : MonoBehaviour//카드만 만지는 CardUISetter와 다르게 얘는 
     void e_CardMouseIn(EventBus.CardMouseIn e)//어떤 카드에 마우스가 들어오면
     {
         if (e.card == null||e.card.isFront==false) return;
-
-
-        
-
-
-        BigHoverUiCard.gameObject.SetActive(true);
-        currShowCard=e.card;
-  
-
-   
-
-
-      
-        if (e.card.cardInstance.isCardDataSOVaild()==true)
-        {
-            //CardCostText.text = cardso.cardCost[0].cost.ToString() + " 코스트";
-
-            e.card.DisplayCost(e.card.cardInstance.GetCardCost()[0].cost, m_cardIcon);
-            CardNameText.text = e.card.cardInstance.GetCardName();
-            CardBottomAttackNumberText.text = e.card.cardInstance.GetAttack().ToString();
-            CardBottomPowerNumberText.text = e.card.cardInstance.GetPower().ToString();
-
-
-            CardEffectText.text = "";
-            illustration.sprite = e.card.cardInstance.GetIllustration();
-
-            foreach (var effect in e.card.cardInstance.GetHitEffects())
-            {
-                if (effect.conditions.Length != 0)
-                {
-                    foreach (var condition in effect.conditions)
-                        CardEffectText.text += condition.GetEvaluateScript() + "\n";//조건이 있으면 먼저 적음
-                }
-                
-
-            CardEffectText.text += effect.effects.GetCardScript() + "\n";//그 카드의 적중효과를 적음
-
-              
-            }
-            if (e.card.cardInstance.GetCardType() == CardDataSO.CardType.Block)
-            {
-                CardEffectText.text += string.Format("{0}방어력", e.card.cardInstance.GetBlockPower()) + "\n";
-            }
-            switch (e.card.cardInstance.GetCardType())
-            {
-                case CardDataSO.CardType.Attack:
-                    CardTypeText.text = "공격";
-                    break;
-                case CardDataSO.CardType.Block:
-                    CardTypeText.text = "수비";
-                    break;
-                default:
-                    CardTypeText.text = "타입없음";
-                    break;
-            }
-        }
-        else
-        {
-            Debug.Log("카드데이터가 안왔다");
-        }
-       
-
-
+        HoverUICard.ChangeCard(e.card);
     }
     void e_cardMouseOut(EventBus.CardMouseOut e)
     {
-        if (e.card == null|| currShowCard!=e.card) return;
-
-
-        BigHoverUiCard.gameObject.SetActive(false);
+        HoverUICard.HideCard();
     }
 
     void e_FSMTextChange(EventBus.FSMChanged e)

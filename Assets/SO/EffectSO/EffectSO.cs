@@ -4,8 +4,10 @@ using UnityEngine;
 
 public abstract class EffectSO : ScriptableObject
 {
-    public abstract void Execute(CardContext ctx);
 
-    public abstract string GetCardScript(CardContext ctx=null);
+   
+    public abstract void Execute(CardContext ctx,int effectPower);
+
+    public abstract string GetCardScript(int effectPower,CardContext ctx= null);
 
 }

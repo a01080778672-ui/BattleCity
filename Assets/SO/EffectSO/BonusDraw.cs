@@ -6,22 +6,22 @@ using UnityEngine;
 public class BonusDraw : EffectSO  //추가 드로우
 {
 
-    public int drawNumber;
 
 
-    public override void Execute(CardContext card)
+
+    public override void Execute(CardContext card, int effectPower)
     {
 
-        EventBus.Publish<EventBus.RequestDrawCards>(new EventBus.RequestDrawCards { who = card.usedEntity,number=drawNumber });
+        EventBus.Publish<EventBus.RequestDrawCards>(new EventBus.RequestDrawCards { who = card.usedEntity,number=effectPower });
 
 
 
     }
 
 
-    public override string GetCardScript(CardContext ctx)
+    public override string GetCardScript(int effectPower, CardContext ctx)
     {
-        return string.Format("{0}장 추가드로우", drawNumber);
+        return string.Format("{0}장 추가드로우", effectPower);
     }
 
 }
